@@ -1,0 +1,3051 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Perpustakaan Novel Offline</title>
+<meta name="theme-color" content="#2f6f5e">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Novel">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<style>
+:root{
+  --bg:#f6f4ef;--surface:#ffffff;--text:#1d1d1f;--muted:#6b6b70;--border:#e3e0d8;
+  --accent:#2f6f5e;--accent-ink:#ffffff;--danger:#b3261e;
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 6px 18px rgba(0,0,0,.06);
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]):not([data-theme="sepia"]){
+    --bg:#121314;--surface:#1c1d1f;--text:#e8e6e1;--muted:#9a9a9f;--border:#2c2d30;
+    --accent:#6fc1a9;--accent-ink:#0d1f1a;--danger:#f2b8b5;
+    --shadow:0 1px 3px rgba(0,0,0,.5);color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121314;--surface:#1c1d1f;--text:#e8e6e1;--muted:#9a9a9f;--border:#2c2d30;
+  --accent:#6fc1a9;--accent-ink:#0d1f1a;--danger:#f2b8b5;
+  --shadow:0 1px 3px rgba(0,0,0,.5);color-scheme:dark;
+}
+:root[data-theme="sepia"]{
+  --bg:#f1e6cf;--surface:#f8f0dd;--text:#3b2f20;--muted:#7a6850;--border:#dccfae;
+  --accent:#8a5a2b;--accent-ink:#ffffff;--danger:#a23a1f;
+  --shadow:0 1px 3px rgba(60,40,10,.15);color-scheme:light;
+}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--text);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  -webkit-tap-highlight-color:transparent}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+[hidden]{display:none!important}
+
+/* ---------- Perpustakaan ---------- */
+.wrap{max-width:980px;margin:0 auto;padding:0 16px 80px}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);
+  display:flex;align-items:center;gap:12px;padding:14px 0 10px}
+.top h1{font-size:1.25rem;margin:0;flex:1;letter-spacing:-.01em}
+.btn{border:1px solid var(--border);background:var(--surface);border-radius:12px;padding:10px 14px;font-weight:600}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:transparent}
+.btn.danger{color:var(--danger)}
+.btn:active{transform:scale(.97)}
+.tools{display:flex;gap:8px;margin:4px 0 14px}
+.tools input{flex:1;min-width:0;border:1px solid var(--border);background:var(--surface);border-radius:12px;padding:10px 12px}
+.tools select{border:1px solid var(--border);background:var(--surface);border-radius:12px;padding:10px 8px}
+.stats{color:var(--muted);font-size:.85rem;margin:0 2px 12px}
+.notice{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--danger);
+  border-radius:10px;padding:10px 12px;font-size:.88rem;margin-bottom:12px}
+.resume{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--border);
+  border-radius:16px;padding:12px;margin-bottom:16px;box-shadow:var(--shadow);width:100%;text-align:left}
+.resume .mini{width:44px;height:60px;border-radius:6px;flex:none;
+  background:linear-gradient(145deg,hsl(var(--h) 55% 38%),hsl(calc(var(--h) + 40) 60% 24%))}
+.resume .rt{font-weight:700;line-height:1.25}
+.resume .rs{color:var(--muted);font-size:.85rem;margin-top:2px}
+.resume .go{margin-left:auto;color:var(--accent);font-weight:700;white-space:nowrap}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(142px,1fr));gap:16px}
+.card{display:flex;flex-direction:column;min-width:0}
+.cover{position:relative;aspect-ratio:2/3;border:0;border-radius:6px 12px 12px 6px;padding:14px 12px 12px 16px;
+  text-align:left;color:#fff;overflow:hidden;box-shadow:var(--shadow);
+  background:linear-gradient(145deg,hsl(var(--h) 55% 38%),hsl(calc(var(--h) + 40) 60% 24%))}
+.cover::before{content:"";position:absolute;left:0;top:0;bottom:0;width:7px;background:rgba(0,0,0,.22)}
+.cover .ct{font-family:Georgia,"Times New Roman",serif;font-weight:700;font-size:1rem;line-height:1.25;
+  display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden;text-shadow:0 1px 2px rgba(0,0,0,.35)}
+.cover .ca{position:absolute;left:16px;right:10px;bottom:30px;font-size:.72rem;opacity:.85;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cover .ext{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.35);border-radius:6px;
+  padding:2px 6px;font-size:.62rem;letter-spacing:.06em;text-transform:uppercase}
+.meta{padding:8px 2px 0}
+.meta .t{font-weight:650;font-size:.92rem;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;
+  -webkit-box-orient:vertical;overflow:hidden}
+.meta .a{color:var(--muted);font-size:.8rem;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pbar{height:4px;background:var(--border);border-radius:4px;margin:8px 0 4px;overflow:hidden}
+.pbar i{display:block;height:100%;background:var(--accent)}
+.row{display:flex;align-items:center;justify-content:space-between;color:var(--muted);font-size:.78rem}
+.row button{border:0;background:none;padding:4px 8px;margin-right:-8px;font-size:1.1rem;color:var(--muted)}
+.empty{text-align:center;padding:48px 20px;border:2px dashed var(--border);border-radius:20px;color:var(--muted)}
+.empty .big{font-size:2.6rem}
+.empty h2{color:var(--text);margin:8px 0 6px;font-size:1.1rem}
+.empty p{margin:0 0 16px;line-height:1.5}
+.dropveil{position:fixed;inset:0;z-index:50;background:color-mix(in srgb,var(--accent) 88%,transparent);
+  color:var(--accent-ink);display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:700;
+  pointer-events:none}
+
+/* ---------- Modal & toast ---------- */
+.overlay{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center}
+.sheet{width:100%;max-width:520px;background:var(--surface);border-radius:20px 20px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom,0px));
+  max-height:85%;overflow:auto}
+@media (min-width:600px){.overlay{align-items:center}.sheet{border-radius:20px}}
+.sheet h3{margin:0 0 12px;font-size:1.05rem}
+.field{display:block;margin-bottom:12px}
+.field span{display:block;font-size:.8rem;color:var(--muted);margin-bottom:4px}
+.field input{width:100%;border:1px solid var(--border);background:var(--bg);border-radius:10px;padding:10px 12px}
+.actions{display:flex;gap:8px;justify-content:flex-end;margin-top:6px;flex-wrap:wrap}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(24px + env(safe-area-inset-bottom,0px));
+  z-index:90;background:#222;color:#fff;padding:10px 16px;border-radius:12px;font-size:.9rem;max-width:90%;
+  box-shadow:0 6px 20px rgba(0,0,0,.3);text-align:center}
+
+.cover.hascover{background-size:cover;background-position:center}
+.cover.hascover .ct,.cover.hascover .ca{display:none}
+.menurow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.menurow .btn{flex:1;min-width:140px;font-size:.88rem}
+.crow{border-bottom:1px solid var(--border);padding:10px 0}
+.crow .top2{display:flex;gap:8px;align-items:center}
+.crow .n{color:var(--muted);font-size:.8rem;min-width:24px;text-align:right}
+.crow input{flex:1;min-width:0;border:1px solid var(--border);background:var(--bg);border-radius:8px;padding:8px 10px}
+.crow .tb{display:flex;gap:6px;margin:8px 0 0 32px;flex-wrap:wrap}
+.crow .tb button{border:1px solid var(--border);background:var(--surface);border-radius:8px;padding:6px 10px;font-size:.82rem}
+.crow .tb button[disabled]{opacity:.35}
+.crow .tb button[data-a="del"]{color:var(--danger)}
+
+.ibtn.bm{opacity:.45}.ibtn.bm.on{opacity:1}
+.bmrow{display:flex;align-items:center;border-bottom:1px solid var(--border)}
+.bmgo{flex:1;min-width:0;text-align:left;border:0;background:none;padding:12px 6px;line-height:1.35}
+.bmgo small{display:block;color:var(--muted);margin-bottom:2px}
+.bmdel,.hldel{border:0;background:none;color:var(--muted);padding:10px;font-size:1rem}
+.muted{color:var(--muted);font-size:.88rem;line-height:1.5}
+.tabs{display:flex;gap:6px;margin-bottom:8px}
+
+.reader.just .rbody article p{text-align:justify;hyphens:auto}
+mark.hl{color:inherit;border-radius:3px;padding:0 1px}
+mark.hl.c1{background:rgba(245,215,66,.55)}mark.hl.c2{background:rgba(111,208,138,.5)}
+mark.hl.c3{background:rgba(111,178,255,.5)}mark.hl.c4{background:rgba(255,143,191,.5)}
+mark.hl.note{border-bottom:2px dotted var(--accent)}
+.tts-cur{background:color-mix(in srgb,var(--accent) 20%,transparent);border-radius:4px}
+#selBar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(72px + env(safe-area-inset-bottom,0px));z-index:35;
+  background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);padding:6px 8px;display:flex;gap:8px;align-items:center}
+#selBar .btn{padding:6px 10px}
+.dotbtn{width:34px;height:34px;border-radius:50%;border:2px solid var(--border);padding:0}
+.dotbtn.on{outline:3px solid var(--accent);outline-offset:1px}
+.ibtn.on{color:var(--accent);background:var(--border)}
+.bars{display:flex;gap:6px;align-items:flex-end;height:96px;margin:8px 0 14px}
+.bcol{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.bfill{width:100%;background:var(--accent);border-radius:4px 4px 0 0;min-height:2px}
+.bcol small{color:var(--muted);font-size:.7rem;margin-top:3px}
+.kv{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:.92rem}
+
+button.chip.sm{flex:none;min-width:0;padding:7px 12px;font-size:.84rem;border-radius:999px}
+.fl{display:flex;gap:6px;overflow-x:auto;margin:0 0 10px;padding-bottom:2px}
+.fl::-webkit-scrollbar{display:none}
+.fav{position:absolute;top:6px;right:8px;color:#ffd54a;font-size:1.05rem;text-shadow:0 1px 2px rgba(0,0,0,.6)}
+.chk{position:absolute;top:8px;left:14px;width:24px;height:24px;border-radius:50%;border:2px solid #fff;background:rgba(0,0,0,.35);
+  color:#fff;display:none;align-items:center;justify-content:center;font-size:.9rem}
+.selecting .chk{display:flex}
+.card.sel .chk{background:var(--accent);border-color:var(--accent)}
+.card.sel .cover{outline:3px solid var(--accent);outline-offset:2px}
+.badge{display:inline-block;font-size:.68rem;padding:1px 6px;border-radius:6px;background:var(--border);color:var(--muted);margin-left:6px}
+#bulkBar{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:1px solid var(--border);
+  padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));display:flex;gap:6px;align-items:center;overflow-x:auto}
+#bulkBar .btn{flex:none;padding:8px 10px;font-size:.85rem}
+#bulkBar .cnt{flex:none;font-weight:700;margin-right:4px}
+.rbody article figure{margin:1em 0;text-align:center;break-inside:avoid}
+.rbody article img{max-width:100%;max-height:62vh;height:auto;object-fit:contain;border-radius:4px}
+/* ---------- Pembaca ---------- */
+.reader{position:fixed;inset:0;z-index:30;background:var(--bg);color:var(--text);display:flex;flex-direction:column;
+  --fs:19px;--lh:1.7;--ff:Georgia,"Iowan Old Style","Times New Roman",serif}
+.rbar{display:flex;align-items:center;gap:6px;padding:8px 10px;background:var(--bg);border-color:var(--border);border-style:solid;border-width:0}
+.rbar.t{padding-top:calc(8px + env(safe-area-inset-top,0px));border-bottom-width:1px}
+.rbar.b{padding-bottom:calc(8px + env(safe-area-inset-bottom,0px));border-top-width:1px;justify-content:space-between}
+.ibtn{border:0;background:none;font-size:1.15rem;padding:8px 10px;border-radius:10px;min-width:40px}
+.ibtn:active{background:var(--border)}
+.rt{flex:1;min-width:0;text-align:center;font-size:.9rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rbody{flex:1;overflow:auto;-webkit-overflow-scrolling:touch}
+.rbody article{max-width:var(--mw,42rem);margin:0 auto;padding:22px var(--mx,20px) 60px;font-family:var(--ff);font-size:var(--fs);line-height:var(--lh);
+  overflow-wrap:anywhere}
+.rbody article h2{font-size:1.45em;line-height:1.25;margin:.3em 0 1em;text-align:center}
+.rbody article h3{font-size:1.2em;margin:1.2em 0 .6em}
+.rbody article p{margin:0 0 .9em;text-indent:1.4em;text-align:start}
+.rbody article .ar{font-family:var(--arff,'Traditional Arabic','Amiri',serif);font-size:calc(1em * var(--ars,1.15));line-height:1;letter-spacing:0;word-spacing:normal}
+.rbody article .arp{font-size:calc(1em * var(--ars,1.15));line-height:var(--arlh,1.9);text-indent:0}
+.rbody article .arp .ar{font-size:1em;line-height:inherit}
+.rbody article h2+p,.rbody article hr+p,.rbody article p.center{text-indent:0}
+.rbody article p.center{text-align:center}
+.rbody article hr{border:0;text-align:center;margin:1.6em 0}
+.rbody article hr::after{content:"* * *";color:var(--muted);letter-spacing:.3em}
+.rbody article blockquote{margin:1em 0;padding:.2em 1em;border-left:3px solid var(--accent);color:var(--muted)}
+.rbody article pre{overflow-x:auto;background:var(--surface);padding:12px;border-radius:8px;font-size:.8em}
+.rbody article code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.88em}
+.rbody article ul,.rbody article ol{padding-left:1.5em}
+.rbody.paged{overflow:hidden;position:relative;touch-action:none}
+.rbody.paged #clip{position:absolute;top:0;bottom:0;left:50%;overflow:hidden}
+.rbody.paged article{max-width:none;margin:0;height:100%;padding:22px var(--px,20px);
+  column-gap:calc(var(--px,20px) * 2);column-fill:auto;will-change:transform}
+.rbody.paged article h2,.rbody.paged article h3{break-after:avoid}
+.rbody.paged article p{orphans:2;widows:2}
+.rprog{font-size:.8rem;color:var(--muted);text-align:center;flex:1}
+.nav{border:1px solid var(--border);background:var(--surface);border-radius:10px;padding:8px 12px;font-size:.88rem;font-weight:600}
+.nav[disabled]{opacity:.35}
+.chip{border:1px solid var(--border);background:var(--surface);border-radius:10px;padding:9px 12px;font-weight:600;flex:1;min-width:70px}
+.chip.on{background:var(--accent);color:var(--accent-ink);border-color:transparent}
+.setrow{margin-bottom:14px}
+.setrow>label{display:block;font-size:.8rem;color:var(--muted);margin-bottom:6px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.toc button{display:block;width:100%;text-align:left;border:0;background:none;padding:12px 6px;border-bottom:1px solid var(--border);line-height:1.3}
+.toc button.cur{color:var(--accent);font-weight:700}
+.toc small{color:var(--muted);margin-right:8px}
+</style>
+</head>
+<body>
+
+<div class="wrap" id="lib">
+  <div class="top">
+    <h1>📚 Perpustakaan Novel</h1>
+    <button class="btn" id="setBtn" aria-label="Data dan cadangan">⚙</button>
+    <button class="btn primary" id="addBtn">＋ Tambah</button>
+  </div>
+  <div id="warn"></div>
+  <div class="tools">
+    <input id="q" type="search" placeholder="Cari judul atau penulis…" autocomplete="off">
+    <select id="sort" aria-label="Urutkan">
+      <option value="read">Terakhir dibaca</option>
+      <option value="added">Terbaru ditambah</option>
+      <option value="title">Judul A–Z</option>
+    </select>
+  </div>
+  <div class="fl" id="stChips"></div>
+  <div class="tools">
+    <select id="fColl" aria-label="Koleksi"><option value="">Semua koleksi</option></select>
+    <select id="fTag" aria-label="Tag"><option value="">Semua tag</option></select>
+    <button class="btn" id="selMode">☑ Pilih</button>
+  </div>
+  <div class="stats" id="stats"></div>
+  <div id="resume"></div>
+  <div id="grid" class="grid"></div>
+  <div id="empty" class="empty" hidden>
+    <div class="big">📖</div>
+    <h2>Perpustakaanmu masih kosong</h2>
+    <p>Unggah novel berformat <b>.txt</b>, <b>.docx</b>, <b>.md</b>, <b>.epub</b>, <b>.pdf</b>, <b>.chm</b>, <b>.fb2</b>, <b>.html</b>, <b>.rtf</b>, atau <b>.mobi/.azw3</b>.<br>Punya cadangan <b>.json</b>? Unggah juga di sini.<br>Semua diproses &amp; disimpan di perangkat ini, tanpa server.</p>
+    <button class="btn primary" id="addBtn2">Pilih file novel</button>
+  </div>
+  <input type="file" id="coverFile" accept="image/*" hidden>
+  <input type="file" id="chapFile" accept=".txt,.md,.markdown,.docx" hidden>
+  <input type="file" id="file" multiple accept=".txt,.md,.markdown,.docx,.epub,.chm,.pdf,.fb2,.html,.htm,.rtf,.mobi,.azw,.azw3,.prc,.json,text/plain,application/pdf,text/markdown,application/epub+zip,application/json,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden>
+</div>
+
+<section class="reader" id="reader" hidden>
+  <div class="rbar t">
+    <button class="ibtn" id="rBack" aria-label="Kembali">←</button>
+    <div class="rt" id="rTitle"></div>
+    <button class="ibtn" id="rTts" aria-label="Baca nyaring">🔊</button>
+    <button class="ibtn bm" id="rBm" aria-label="Tandai halaman">🔖</button>
+    <button class="ibtn" id="rToc" aria-label="Daftar bab dan penanda">☰</button>
+    <button class="ibtn" id="rSet" aria-label="Tampilan">Aa</button>
+  </div>
+  <div class="rbody" id="rBody"><div id="clip"><article id="rText"></article></div></div>
+  <div class="rbar b">
+    <button class="nav" id="rPrev" aria-label="Bab sebelumnya">‹ Bab</button>
+    <div class="rprog" id="rProg"></div>
+    <button class="nav" id="rNext" aria-label="Bab berikutnya">Bab ›</button>
+  </div>
+</section>
+
+<div id="bulkBar" hidden></div>
+<div id="selBar" hidden>
+  <button class="dotbtn" data-c="1" style="background:#f5d742" aria-label="Sorot kuning"></button>
+  <button class="dotbtn" data-c="2" style="background:#6fd08a" aria-label="Sorot hijau"></button>
+  <button class="dotbtn" data-c="3" style="background:#6fb2ff" aria-label="Sorot biru"></button>
+  <button class="dotbtn" data-c="4" style="background:#ff8fbf" aria-label="Sorot merah muda"></button>
+  <button class="btn" id="selNote" aria-label="Tambah catatan">📝</button>
+  <button class="btn" id="selCopy" aria-label="Salin">⧉</button>
+</div>
+<div id="modalRoot"></div>
+<div class="dropveil" id="veil" hidden>Lepaskan file untuk menambahkan</div>
+<div id="toast" hidden></div>
+
+<script>
+(function(){
+'use strict';
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const words=t=>(t.match(/\S+/g)||[]).length;
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+const nf=n=>n>=10000?Math.round(n/1000)+' rb':n.toLocaleString('id-ID');
+function hue(s){let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return h%360;}
+
+/* ---------- Penyimpanan (IndexedDB, cadangan: memori) ---------- */
+const mem={meta:new Map(),content:new Map()};
+let idb=null;
+function openDB(){
+  return new Promise(res=>{
+    try{
+      const r=indexedDB.open('perpus-novel-offline',1);
+      r.onupgradeneeded=()=>{const d=r.result;d.createObjectStore('meta',{keyPath:'id'});d.createObjectStore('content',{keyPath:'id'});};
+      r.onsuccess=()=>{idb=r.result;res(true);};
+      r.onerror=()=>res(false);
+      r.onblocked=()=>res(false);
+    }catch(e){res(false);}
+  });
+}
+function tx(store,mode,fn){
+  return new Promise((resolve,reject)=>{
+    const t=idb.transaction(store,mode);
+    const rq=fn(t.objectStore(store));
+    t.oncomplete=()=>resolve(rq&&rq.result);
+    t.onerror=()=>reject(t.error);
+    t.onabort=()=>reject(t.error);
+  });
+}
+const dbAll=async s=>idb?await tx(s,'readonly',o=>o.getAll()):[...mem[s].values()];
+const dbGet=async(s,id)=>idb?await tx(s,'readonly',o=>o.get(id)):mem[s].get(id);
+const dbPut=async(s,v)=>{if(idb)await tx(s,'readwrite',o=>o.put(v));else mem[s].set(v.id,v);};
+const dbDel=async(s,id)=>{if(idb)await tx(s,'readwrite',o=>o.delete(id));else mem[s].delete(id);};
+
+/* ---------- Pengaturan tampilan ---------- */
+const AR_STACKS={
+  auto:"'Traditional Arabic','TraditionalArabic','Amiri','Noto Naskh Arabic','Scheherazade New',serif",
+  trad:"'Traditional Arabic','TraditionalArabic','Times New Roman','Amiri',serif",
+  amiri:"'Amiri','Noto Naskh Arabic',serif",
+  naskh:"'Noto Naskh Arabic','Amiri',serif",
+  sch:"'Scheherazade New','Amiri',serif"
+};
+const defaults={theme:'auto',size:19,font:'serif',lh:1.7,mode:'scroll',arFont:'auto',arScale:1.15,arLh:'auto',enc:'auto',margin:'normal',justify:'off',keepAwake:'on',ttsRate:1,ttsVoice:'',importImages:'on',arDigits:'arab'};
+let settings=Object.assign({},defaults);
+try{const s=localStorage.getItem('perpus-settings');if(s)Object.assign(settings,JSON.parse(s));}catch(e){}
+function saveSettings(){try{localStorage.setItem('perpus-settings',JSON.stringify(settings));}catch(e){}}
+function applySettings(){
+  const root=document.documentElement;
+  if(settings.theme==='auto')root.removeAttribute('data-theme');else root.setAttribute('data-theme',settings.theme);
+  const r=$('#reader');
+  r.style.setProperty('--fs',settings.size+'px');
+  r.style.setProperty('--lh',settings.lh);
+  r.style.setProperty('--arff',AR_STACKS[settings.arFont]||AR_STACKS.auto);
+  r.style.setProperty('--ars',settings.arScale||1.15);
+  r.style.setProperty('--arlh',settings.arLh==='auto'||!settings.arLh?'calc(var(--lh) + .3)':String(settings.arLh));
+  r.classList.toggle('just',settings.justify==='on');
+  r.style.setProperty('--mx',({narrow:'12px',normal:'20px',wide:'36px'})[settings.margin]||'20px');
+  r.style.setProperty('--ff',settings.font==='serif'
+    ?'Georgia,"Iowan Old Style","Times New Roman",serif'
+    :'system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif');
+}
+
+/* ---------- Toast ---------- */
+let toastT;
+function toast(msg,ms=2600){
+  const t=$('#toast');t.textContent=msg;t.hidden=false;clearTimeout(toastT);
+  if(ms)toastT=setTimeout(()=>{t.hidden=true;},ms);
+}
+
+/* ---------- Parser: ZIP / DOCX ---------- */
+async function unzip(buf){
+  const u8=new Uint8Array(buf),dv=new DataView(buf);
+  let e=-1;
+  for(let i=u8.length-22;i>=Math.max(0,u8.length-65557);i--){if(dv.getUint32(i,true)===0x06054b50){e=i;break;}}
+  if(e<0)throw new Error('Bukan file DOCX yang valid');
+  const count=dv.getUint16(e+10,true);let off=dv.getUint32(e+16,true);
+  const files={};
+  for(let n=0;n<count;n++){
+    if(dv.getUint32(off,true)!==0x02014b50)break;
+    const method=dv.getUint16(off+10,true),csize=dv.getUint32(off+20,true),
+      nlen=dv.getUint16(off+28,true),elen=dv.getUint16(off+30,true),clen=dv.getUint16(off+32,true),lho=dv.getUint32(off+42,true);
+    const name=new TextDecoder().decode(u8.subarray(off+46,off+46+nlen));
+    files[name]={method,csize,lho};
+    off+=46+nlen+elen+clen;
+  }
+  return {files,u8,dv};
+}
+async function readBytes(z,name){
+  let f=z.files[name];
+  if(!f){const k=Object.keys(z.files).find(x=>x.toLowerCase()===String(name).toLowerCase());f=k&&z.files[k];}
+  if(!f)return null;
+  const lo=f.lho,nlen=z.dv.getUint16(lo+26,true),elen=z.dv.getUint16(lo+28,true);
+  const start=lo+30+nlen+elen,data=z.u8.subarray(start,start+f.csize);
+  if(f.method===0)return data.slice();
+  if(typeof DecompressionStream==='undefined')throw new Error('Browser ini belum mendukung pembacaan file ZIP (DOCX/EPUB)');
+  const stream=new Blob([data]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+  return new Uint8Array(await new Response(stream).arrayBuffer());
+}
+async function readEntry(z,name){
+  const b=await readBytes(z,name);
+  return b?new TextDecoder().decode(b):null;
+}
+const W='http://schemas.openxmlformats.org/wordprocessingml/2006/main';
+const HEAD_RE=/^(bab|chapter|bagian|part|prolog|epilog|prologue|epilogue|kata pengantar|pendahuluan|interlude|extra)\b[\s\dIVXLCivxlc.:\-–—]*.{0,70}$/i;
+const looksHeading=t=>t.length<=80&&HEAD_RE.test(t);
+
+async function parseDocx(buf){
+  const z=await unzip(buf);
+  const xml=await readEntry(z,'word/document.xml');
+  if(!xml)throw new Error('Isi dokumen tidak ditemukan');
+  const doc=new DOMParser().parseFromString(xml,'application/xml');
+  if(doc.getElementsByTagName('parsererror').length)throw new Error('Dokumen rusak');
+  const rels={},budget={n:0};
+  try{
+    const rx=await readEntry(z,'word/_rels/document.xml.rels');
+    if(rx){const rd=new DOMParser().parseFromString(rx,'application/xml');for(const r of rd.getElementsByTagName('Relationship'))rels[r.getAttribute('Id')]=r.getAttribute('Target');}
+  }catch(e){}
+  const blocks=[];
+  for(const p of doc.getElementsByTagNameNS(W,'p')){
+    let style='',center=false;
+    const pPr=p.getElementsByTagNameNS(W,'pPr')[0];
+    if(pPr){
+      const st=pPr.getElementsByTagNameNS(W,'pStyle')[0];
+      style=st?(st.getAttributeNS(W,'val')||''):'';
+      const jc=pPr.getElementsByTagNameNS(W,'jc')[0];
+      center=!!jc&&jc.getAttributeNS(W,'val')==='center';
+    }
+    let html='',text='';
+    for(const r of p.getElementsByTagNameNS(W,'r')){
+      let b=false,i=false;
+      const rPr=r.getElementsByTagNameNS(W,'rPr')[0];
+      if(rPr){
+        const bb=rPr.getElementsByTagNameNS(W,'b')[0],ii=rPr.getElementsByTagNameNS(W,'i')[0];
+        b=!!bb&&!['0','false'].includes(bb.getAttributeNS(W,'val'));
+        i=!!ii&&!['0','false'].includes(ii.getAttributeNS(W,'val'));
+      }
+      let t='';
+      for(const n of r.childNodes){
+        if(n.localName==='t')t+=n.textContent;
+        else if(n.localName==='tab')t+='\t';
+        else if(n.localName==='br'||n.localName==='cr')t+='\n';
+      }
+      if(!t)continue;
+      text+=t;
+      let h=esc(t).replace(/\n/g,'<br>').replace(/\t/g,'&emsp;');
+      if(i)h='<em>'+h+'</em>';
+      if(b)h='<strong>'+h+'</strong>';
+      html+=h;
+    }
+    const clean=text.trim();
+    const imgB=await docxImages(p,z,rels,budget);
+    if(!clean){imgB.forEach(b=>blocks.push(b));continue;}
+    const hm=style.match(/^(heading|judul|title|subtitle)\s*(\d)?/i);
+    if(hm){
+      let lvl=hm[2]?Math.min(+hm[2],3):1;
+      if(/^subtitle/i.test(hm[1]))lvl=2;
+      blocks.push({k:'h',lvl,html:esc(clean),text:clean});
+    }else if(looksHeading(clean)){
+      blocks.push({k:'h',lvl:1,html:esc(clean),text:clean});
+    }else{
+      blocks.push({k:'p',html:html.trim(),text:clean,cls:center?'center':''});
+    }
+    imgB.forEach(b=>blocks.push(b));
+  }
+  let title='',author='';
+  try{
+    const core=await readEntry(z,'docProps/core.xml');
+    if(core){
+      const cd=new DOMParser().parseFromString(core,'application/xml');
+      title=(cd.getElementsByTagName('dc:title')[0]||{}).textContent||'';
+      author=(cd.getElementsByTagName('dc:creator')[0]||{}).textContent||'';
+    }
+  }catch(e){}
+  return {blocks,title:title.trim(),author:author.trim()};
+}
+
+/* ---------- Parser: TXT ---------- */
+function parseTxt(src){
+  src=src.replace(/\r\n?/g,'\n');
+  const blankSep=(src.match(/\n[ \t]*\n/g)||[]).length>3;
+  const paras=blankSep
+    ?src.split(/\n[ \t]*\n+/).map(p=>p.replace(/\s*\n\s*/g,' ').trim())
+    :src.split('\n').map(p=>p.trim());
+  const blocks=paras.filter(Boolean).map(t=>looksHeading(t)
+    ?{k:'h',lvl:1,html:esc(t),text:t}
+    :{k:'p',html:esc(t),text:t,cls:''});
+  return {blocks};
+}
+
+/* ---------- Parser: Markdown ---------- */
+function inline(s){
+  s=esc(s);
+  s=s.replace(/`([^`]+)`/g,'<code>$1</code>');
+  s=s.replace(/!\[([^\]]*)\]\([^)]*\)/g,'$1');
+  s=s.replace(/\[([^\]]+)\]\([^)]*\)/g,'$1');
+  s=s.replace(/\*\*\*(.+?)\*\*\*/g,'<strong><em>$1</em></strong>');
+  s=s.replace(/\*\*(.+?)\*\*|__(.+?)__/g,(m,a,b)=>'<strong>'+(a||b)+'</strong>');
+  s=s.replace(/\*(.+?)\*/g,'<em>$1</em>');
+  s=s.replace(/(^|[\s(])_(.+?)_(?=[\s).,!?;:]|$)/g,'$1<em>$2</em>');
+  return s;
+}
+function parseMd(src){
+  const lines=src.replace(/\r\n?/g,'\n').split('\n'),blocks=[];
+  let para=[];
+  const flush=()=>{
+    if(para.length){const t=para.join(' ').trim();if(t)blocks.push({k:'p',html:inline(t),text:t,cls:''});para=[];}
+  };
+  const LI=/^\s*([-*+]|\d+[.)])\s+/;
+  for(let i=0;i<lines.length;i++){
+    const ln=lines[i];let m;
+    if(/^\s*```/.test(ln)){
+      flush();const buf=[];i++;
+      while(i<lines.length&&!/^\s*```/.test(lines[i])){buf.push(lines[i]);i++;}
+      blocks.push({k:'html',html:'<pre><code>'+esc(buf.join('\n'))+'</code></pre>',text:buf.join(' ')});
+      continue;
+    }
+    if((m=ln.match(/^(#{1,6})\s+(.*?)\s*#*\s*$/))){
+      flush();
+      blocks.push({k:'h',lvl:m[1].length<=2?m[1].length:3,html:inline(m[2]),text:m[2]});
+      continue;
+    }
+    if(/^\s*([-*_])(\s*\1){2,}\s*$/.test(ln)){flush();blocks.push({k:'html',html:'<hr>',text:''});continue;}
+    if(/^\s*>/.test(ln)){
+      flush();const buf=[];
+      while(i<lines.length&&/^\s*>/.test(lines[i])){buf.push(lines[i].replace(/^\s*>\s?/,''));i++;}
+      i--;const t=buf.join(' ').trim();
+      blocks.push({k:'html',html:'<blockquote>'+inline(t)+'</blockquote>',text:t});
+      continue;
+    }
+    if(LI.test(ln)){
+      flush();const ordered=/^\s*\d/.test(ln),items=[];
+      while(i<lines.length&&LI.test(lines[i])){items.push(lines[i].replace(LI,''));i++;}
+      i--;const tag=ordered?'ol':'ul';
+      blocks.push({k:'html',html:'<'+tag+'>'+items.map(x=>'<li>'+inline(x)+'</li>').join('')+'</'+tag+'>',text:items.join(' ')});
+      continue;
+    }
+    if(!ln.trim()){flush();continue;}
+    para.push(ln.trim());
+  }
+  flush();
+  return {blocks};
+}
+
+/* ---------- Bab ---------- */
+function renderBlock(b){
+  if(b.k==='h')return '<h'+(b.lvl>=3?3:2)+'>'+b.html+'</h'+(b.lvl>=3?3:2)+'>';
+  if(b.k==='p')return '<p'+(b.cls?' class="'+b.cls+'"':'')+'>'+b.html+'</p>';
+  return b.html;
+}
+function buildChapters(blocks,bookTitle){
+  const chs=[];let cur={title:null,parts:[],blocks:[]};
+  const push=()=>{
+    if(cur.parts.length)chs.push({title:cur.title||(chs.length?'Bagian '+(chs.length+1):'Pembuka'),parts:cur.parts,blocks:cur.blocks});
+  };
+  for(const b of blocks){
+    if(b.k==='h'&&b.lvl<=2){push();cur={title:b.text.slice(0,120),parts:[renderBlock(b)],blocks:[b]};}
+    else{cur.parts.push(renderBlock(b));cur.blocks.push(b);}
+  }
+  push();
+  let out=[];
+  if(chs.length===1&&words(blocks.map(b=>b.text).join(' '))>8000){
+    const only=chs[0],per=4000;let acc=[],w=0,n=1;
+    const flushPart=()=>{if(acc.length){out.push({title:(n===1&&only.title!=='Pembuka'?only.title:'Bagian '+n),html:acc.join('')});n++;acc=[];w=0;}};
+    only.blocks.forEach((b,i)=>{acc.push(only.parts[i]);w+=words(b.text);if(w>=per)flushPart();});
+    flushPart();
+    if(out.length>1)out[0].title=only.title==='Pembuka'?'Bagian 1':only.title;
+  }else{
+    out=chs.map(c=>({title:c.title,html:c.parts.join('')}));
+  }
+  if(out.length===1&&out[0].title==='Pembuka')out[0].title=bookTitle;
+  return out;
+}
+
+/*LZX-BEGIN*/
+const LZX_SLOTS=[30,32,34,36,38,42,50];
+const LZX_EXTRA=[],LZX_BASE=[];
+(function(){
+  let j=0;
+  for(let i=0;i<=50;i+=2){LZX_EXTRA[i]=LZX_EXTRA[i+1]=j;if(i!==0&&j<17)j++;}
+  let b=0;
+  for(let i=0;i<=51;i++){LZX_BASE[i]=b;b+=Math.pow(2,LZX_EXTRA[i]);}
+})();
+const POW2=[];for(let i=0;i<=52;i++)POW2[i]=Math.pow(2,i);
+
+function lzxTable(lens,n){
+  let max=0;
+  for(let i=0;i<n;i++)if(lens[i]>max)max=lens[i];
+  if(max===0)return {max:0,tab:null};
+  if(max>16)throw new Error('LZX: panjang kode tidak valid');
+  const count=new Array(max+1).fill(0);
+  for(let i=0;i<n;i++)if(lens[i])count[lens[i]]++;
+  const next=new Array(max+2).fill(0);
+  let code=0;
+  for(let l=1;l<=max;l++){code=(code+count[l-1])*2;next[l]=code;}
+  const tab=new Int32Array(1<<max);
+  for(let s=0;s<n;s++){
+    const l=lens[s];if(!l)continue;
+    const c=next[l]++;
+    if(c>=POW2[l])throw new Error('LZX: pohon Huffman melebihi batas');
+    const sh=max-l;
+    tab.fill(s*32+l,c*POW2[sh],(c+1)*POW2[sh]);
+  }
+  return {max,tab};
+}
+
+/* Dekompresi aliran LZX milik CHM. Setiap "frame" = 32768 byte keluaran;
+   status dikembalikan ke awal tiap resetFrames frame, pada offset terkompresi offs[frame]. */
+function lzxDecode(src,outLen,windowBits,resetFrames,offs){
+  const FR=32768;
+  const posSlots=LZX_SLOTS[windowBits-15];
+  if(!posSlots)throw new Error('LZX: ukuran jendela tidak didukung ('+windowBits+')');
+  const mainN=256+posSlots*8;
+  const out=new Uint8Array(outLen);
+  let pos=0,bitBuf=0,bitsLeft=0;
+
+  const ensure=n=>{
+    while(bitsLeft<n){
+      if(pos>src.length+64)throw new Error('LZX: data terkompresi habis (file rusak?)');
+      const w=pos+1<src.length?(src[pos]|(src[pos+1]<<8)):0;
+      pos+=2;bitBuf=bitBuf*65536+w;bitsLeft+=16;
+    }
+  };
+  const drop=n=>{bitsLeft-=n;bitBuf=bitBuf%POW2[bitsLeft];};
+  const bits=n=>{
+    if(n===0)return 0;
+    ensure(n);
+    const v=Math.floor(bitBuf/POW2[bitsLeft-n])%POW2[n];
+    drop(n);return v;
+  };
+  const sym=t=>{
+    if(!t.max)throw new Error('LZX: pohon kosong');
+    ensure(t.max);
+    const v=t.tab[Math.floor(bitBuf/POW2[bitsLeft-t.max])%POW2[t.max]];
+    if(!v)throw new Error('LZX: kode Huffman tidak valid');
+    drop(v&31);return v>>5;
+  };
+
+  const mainLens=new Uint8Array(mainN),lenLens=new Uint8Array(249),alignLens=new Uint8Array(8);
+  let mainT=null,lenT=null,alignT=null;
+  let R0=1,R1=1,R2=1,blockType=0,blockLength=0,blockRemaining=0,headerRead=false,intelFilesize=0;
+
+  const readLens=(lens,first,last)=>{
+    const pl=new Uint8Array(20);
+    for(let i=0;i<20;i++)pl[i]=bits(4);
+    const pt=lzxTable(pl,20);
+    for(let x=first;x<last;){
+      let z=sym(pt);
+      if(z===17){let y=bits(4)+4;while(y--&&x<last)lens[x++]=0;}
+      else if(z===18){let y=bits(5)+20;while(y--&&x<last)lens[x++]=0;}
+      else if(z===19){
+        let y=bits(1)+4;z=sym(pt);z=lens[x]-z;if(z<0)z+=17;
+        while(y--&&x<last)lens[x++]=z;
+      }else{z=lens[x]-z;if(z<0)z+=17;lens[x++]=z;}
+    }
+  };
+  const resetState=()=>{
+    R0=R1=R2=1;blockType=0;blockRemaining=0;blockLength=0;headerRead=false;
+    mainLens.fill(0);lenLens.fill(0);
+  };
+  const u32=p=>(src[p]|(src[p+1]<<8)|(src[p+2]<<16)|(src[p+3]<<24))>>>0;
+  const readBlockHeader=()=>{
+    if(!headerRead){
+      intelFilesize=0;
+      if(bits(1)){const hi=bits(16),lo=bits(16);intelFilesize=hi*65536+lo;}
+      headerRead=true;
+    }
+    blockType=bits(3);
+    const hi=bits(16),lo=bits(8);
+    blockLength=blockRemaining=hi*256+lo;
+    if(blockType===2){
+      for(let i=0;i<8;i++)alignLens[i]=bits(3);
+      alignT=lzxTable(alignLens,8);
+    }
+    if(blockType===1||blockType===2){
+      readLens(mainLens,0,256);
+      readLens(mainLens,256,mainN);
+      readLens(lenLens,0,249);
+      mainT=lzxTable(mainLens,mainN);
+      lenT=lzxTable(lenLens,249);
+    }else if(blockType===3){
+      if(bitsLeft===0)pos+=2;
+      bitBuf=0;bitsLeft=0;
+      R0=u32(pos);R1=u32(pos+4);R2=u32(pos+8);pos+=12;
+    }else throw new Error('LZX: tipe blok tidak dikenal');
+  };
+  const e8=(fs,fe)=>{
+    let cur=fs;const end=fe-10;
+    for(let i=fs;i<end;){
+      if(out[i++]!==0xE8){cur++;continue;}
+      const abs=out[i]|(out[i+1]<<8)|(out[i+2]<<16)|(out[i+3]<<24);
+      if(abs>=-cur&&abs<intelFilesize){
+        const rel=abs>=0?abs-cur:abs+intelFilesize;
+        out[i]=rel&255;out[i+1]=(rel>>8)&255;out[i+2]=(rel>>16)&255;out[i+3]=(rel>>24)&255;
+      }
+      i+=4;cur+=5;
+    }
+  };
+
+  const nFrames=Math.ceil(outLen/FR);
+  let outPos=0;
+  for(let f=0;f<nFrames;f++){
+    if(f%resetFrames===0){
+      if(offs[f]===undefined)throw new Error('LZX: tabel reset tidak lengkap');
+      resetState();pos=offs[f];bitBuf=0;bitsLeft=0;
+    }
+    const fs=f*FR,fe=Math.min(fs+FR,outLen);
+    while(outPos<fe){
+      if(blockRemaining===0)readBlockHeader();
+      const run=Math.min(blockRemaining,fe-outPos);
+      if(blockType===3){
+        out.set(src.subarray(pos,pos+run),outPos);
+        pos+=run;outPos+=run;blockRemaining-=run;
+        if(blockRemaining===0&&(blockLength&1))pos++;
+        continue;
+      }
+      let made=0;
+      while(made<run){
+        const me=sym(mainT);
+        if(me<256){out[outPos++]=me;made++;continue;}
+        const m=me-256;
+        let len=m&7;
+        if(len===7)len+=sym(lenT);
+        len+=2;
+        const slot=m>>3;
+        let off;
+        if(slot===0)off=R0;
+        else if(slot===1){off=R1;R1=R0;R0=off;}
+        else if(slot===2){off=R2;R2=R0;R0=off;}
+        else{
+          const extra=LZX_EXTRA[slot]===undefined?17:LZX_EXTRA[slot];
+          off=LZX_BASE[slot]-2;
+          if(blockType===2){
+            if(extra>3){off+=bits(extra-3)*8;off+=sym(alignT);}
+            else if(extra===3)off+=sym(alignT);
+            else if(extra>0)off+=bits(extra);
+            else off=1;
+          }else{
+            if(extra>0)off+=bits(extra);else off=1;
+          }
+          R2=R1;R1=R0;R0=off;
+        }
+        let from=outPos-off;
+        if(from<0)throw new Error('LZX: referensi di luar jendela (file rusak?)');
+        if(outPos+len>outLen)len=outLen-outPos;
+        for(let k=0;k<len;k++)out[outPos+k]=out[from+k];
+        outPos+=len;made+=len;
+      }
+      if(made>blockRemaining)throw new Error('LZX: blok melebihi panjangnya');
+      blockRemaining-=made;
+    }
+    /* rata ke batas 16 bit di akhir setiap frame */
+    if(bitsLeft%16)drop(bitsLeft%16);
+    if(intelFilesize&&fe-fs>10)e8(fs,fe);
+  }
+  return out;
+}
+
+/* ---- Kontainer CHM (ITSF/ITSP/PMGL) ---- */
+function chmParse(u8){
+  const dv=new DataView(u8.buffer,u8.byteOffset,u8.byteLength);
+  const u32=o=>dv.getUint32(o,true);
+  const u64=o=>dv.getUint32(o,true)+dv.getUint32(o+4,true)*4294967296;
+  const tag=(o,n)=>String.fromCharCode(...u8.subarray(o,o+n));
+  if(u8.length<0x60||tag(0,4)!=='ITSF')throw new Error('Bukan file CHM yang valid');
+  const ver=u32(4);
+  const dirOff=u64(0x48),dirLen=u64(0x50);
+  const dataOff=ver>=3?u64(0x58):dirOff+dirLen;
+  if(tag(dirOff,4)!=='ITSP')throw new Error('Direktori CHM tidak ditemukan');
+  const hdrLen=u32(dirOff+8),chunkSize=u32(dirOff+0x10),numChunks=u32(dirOff+0x2C);
+  const entries=new Map();
+  const td=new TextDecoder('utf-8');
+  for(let c=0;c<numChunks;c++){
+    const base=dirOff+hdrLen+c*chunkSize;
+    if(base+chunkSize>u8.length||tag(base,4)!=='PMGL')continue;
+    const nEnt=dv.getUint16(base+chunkSize-2,true);
+    let p=base+0x14;
+    const enc=()=>{let v=0,b;do{b=u8[p++];v=v*128+(b&127);}while(b&128);return v;};
+    for(let e=0;e<nEnt;e++){
+      const nl=enc();
+      const name=td.decode(u8.subarray(p,p+nl));p+=nl;
+      const s=enc(),o=enc(),l=enc();
+      entries.set(name,{s,o,l});
+    }
+  }
+  let comp=null;
+  const prep=()=>{
+    if(comp)return comp;
+    const P='::DataSpace/Storage/MSCompressed/';
+    const cd=entries.get(P+'ControlData'),rt=entries.get(P+'Transform/{7FC28940-9D31-11D0-9B27-00A0C91E9C7C}/InstanceData/ResetTable'),ct=entries.get(P+'Content');
+    if(!cd||!rt||!ct)throw new Error('Bagian terkompresi CHM tidak lengkap');
+    const c=dataOff+cd.o;
+    if(tag(c+4,4)!=='LZXC')throw new Error('Format kompresi CHM tidak didukung');
+    let ri=u32(c+12),ws=u32(c+16);
+    if(u32(c+8)===2){ri*=0x8000;ws*=0x8000;}
+    let wb=0;while(Math.pow(2,wb)<ws)wb++;
+    if(Math.pow(2,wb)!==ws)throw new Error('Ukuran jendela LZX tidak valid');
+    if(ri%0x8000||ri===0)throw new Error('Interval reset LZX tidak valid');
+    const r=dataOff+rt.o;
+    const tblOff=u32(r+12),uLen=u64(r+16),blen=u64(r+32);
+    if(blen!==0x8000)throw new Error('Ukuran blok LZX tidak didukung');
+    if(uLen>600*1024*1024)throw new Error('CHM terlalu besar untuk dibuka di browser');
+    const nFr=Math.ceil(uLen/0x8000),offs=[];
+    for(let i=0;i<nFr;i++)offs.push(u64(r+tblOff+i*8));
+    const src=u8.subarray(dataOff+ct.o,dataOff+ct.o+ct.l);
+    comp=lzxDecode(src,uLen,wb,ri/0x8000,offs);
+    return comp;
+  };
+  const getFile=name=>{
+    const e=entries.get(name);if(!e)return null;
+    if(e.s===0)return u8.subarray(dataOff+e.o,dataOff+e.o+e.l);
+    const d=prep();
+    return d.subarray(e.o,e.o+e.l);
+  };
+  return {entries,getFile};
+}
+/*LZX-END*/
+
+/* ---------- Teks, DOM → blok, sanitizer ---------- */
+function lcidCharset(lcid){
+  const id=lcid&0xFFFF,lang=lcid&0x3FF;
+  if(id===0x0804||id===0x1004)return 'gbk';
+  if(id===0x0404||id===0x0C04||id===0x1404)return 'big5';
+  const m={0x01:'windows-1256',0x20:'windows-1256',0x29:'windows-1256',0x0D:'windows-1255',0x04:'gbk',0x11:'shift_jis',0x12:'euc-kr',
+    0x19:'windows-1251',0x22:'windows-1251',0x23:'windows-1251',0x02:'windows-1251',0x1E:'windows-874',0x2A:'windows-1258',
+    0x15:'windows-1250',0x0E:'windows-1250',0x05:'windows-1250',0x08:'windows-1253',0x1F:'windows-1254'};
+  return m[lang]||'';
+}
+function decodeText(u8,opt){
+  opt=opt||{};
+  if(u8.length>=2&&u8[0]===0xFF&&u8[1]===0xFE)return new TextDecoder('utf-16le').decode(u8);
+  if(u8.length>=2&&u8[0]===0xFE&&u8[1]===0xFF)return new TextDecoder('utf-16be').decode(u8);
+  const tryDec=(label,fatal)=>{try{return new TextDecoder(label,{fatal:!!fatal}).decode(u8);}catch(e){return null;}};
+  let r;
+  if(settings.enc&&settings.enc!=='auto'){r=tryDec(settings.enc);if(r!==null)return r;}
+  if(!opt.noMeta){
+    const head=new TextDecoder('latin1').decode(u8.subarray(0,Math.min(u8.length,4096)));
+    const m=head.match(/charset\s*=\s*["']?\s*([\w\-:.]+)/i);
+    if(m){r=tryDec(m[1].trim());if(r!==null)return r;}
+  }
+  r=tryDec('utf-8',true);if(r!==null)return r;
+  if(opt.hint){r=tryDec(opt.hint);if(r!==null)return r;}
+  r=tryDec('gb18030',true);if(r!==null)return r;
+  return tryDec('windows-1252')||'';
+}
+const SKIP_TAGS=new Set(['script','style','head','svg','image','audio','video','canvas','nav','noscript','iframe','object','link','meta','title','map','math']);
+const CONTAINER=new Set(['div','section','article','aside','figure','main','header','footer','body','figcaption','center','details','summary','form','tbody','thead','tfoot']);
+function domToBlocks(root){
+  const blocks=[];
+  const trim=h=>h.replace(/^(\s|<br>)+|(\s|<br>)+$/g,'');
+  const inlNode=n=>{
+    if(n.nodeType===3)return esc(n.nodeValue.replace(/\s+/g,' '));
+    if(n.nodeType!==1)return '';
+    const t=n.localName.toLowerCase();
+    if(SKIP_TAGS.has(t))return '';
+    if(t==='br')return '<br>';
+    const inner=inlKids(n);
+    if(t==='b'||t==='strong')return '<strong>'+inner+'</strong>';
+    if(t==='i'||t==='em'||t==='cite'||t==='dfn')return '<em>'+inner+'</em>';
+    if(t==='sup'||t==='sub')return '<'+t+'>'+inner+'</'+t+'>';
+    if(t==='p'||t==='div'||t==='li'||t==='tr')return inner+'<br>';
+    return inner;
+  };
+  const inlKids=n=>{let h='';for(const c of n.childNodes)h+=inlNode(c);return h;};
+  let buf='';
+  const flush=()=>{
+    const h=trim(buf);buf='';
+    const txt=h.replace(/<[^>]*>/g,'').replace(/&[a-z#0-9]+;/gi,' ').trim();
+    if(txt)blocks.push({k:'p',html:h,text:txt,cls:''});
+  };
+  const walk=el=>{
+    for(const n of el.childNodes){
+      if(n.nodeType===3){buf+=esc(n.nodeValue.replace(/\s+/g,' '));continue;}
+      if(n.nodeType!==1)continue;
+      const t=n.localName.toLowerCase();
+      if(SKIP_TAGS.has(t))continue;
+      if(/^h[1-6]$/.test(t)){
+        flush();
+        const tx=n.textContent.replace(/\s+/g,' ').trim();
+        if(tx)blocks.push({k:'h',lvl:Math.min(+t[1],3),html:trim(inlKids(n)),text:tx});
+      }else if(t==='img'){
+        flush();
+        const src=n.getAttribute('src')||'';
+        if(/^data:image\/(jpeg|png|gif|webp);base64,/i.test(src))blocks.push({k:'html',html:'<figure class="fig"><img src="'+esc(src)+'" alt="'+esc(n.getAttribute('alt')||'')+'"></figure>',text:'',img:true});
+      }else if(t==='p'&&n.getElementsByTagName('img').length){flush();walk(n);flush();}
+      else if(t==='p'){flush();buf=inlKids(n);flush();}
+      else if(t==='blockquote'){
+        flush();const h=trim(inlKids(n));
+        if(h.replace(/<[^>]*>/g,'').trim())blocks.push({k:'html',html:'<blockquote>'+h+'</blockquote>',text:n.textContent});
+      }else if(t==='ul'||t==='ol'){
+        flush();
+        const items=[...n.children].filter(c=>c.localName.toLowerCase()==='li').map(li=>'<li>'+trim(inlKids(li))+'</li>');
+        if(items.length)blocks.push({k:'html',html:'<'+t+'>'+items.join('')+'</'+t+'>',text:n.textContent});
+      }else if(t==='pre'){flush();blocks.push({k:'html',html:'<pre><code>'+esc(n.textContent)+'</code></pre>',text:n.textContent});}
+      else if(t==='hr'){flush();blocks.push({k:'html',html:'<hr>',text:''});}
+      else if(t==='table'){
+        flush();
+        for(const tr of n.getElementsByTagName('tr')){
+          const tx=[...tr.children].map(c=>c.textContent.replace(/\s+/g,' ').trim()).filter(Boolean).join(' | ');
+          if(tx)blocks.push({k:'p',html:esc(tx),text:tx,cls:''});
+        }
+      }else if(CONTAINER.has(t)){flush();walk(n);flush();}
+      else buf+=inlNode(n);
+    }
+  };
+  walk(root);flush();
+  return blocks;
+}
+/* Bersihkan HTML dari sumber luar (cadangan) agar hanya tag aman yang tersisa */
+const OK_TAGS=new Set(['h2','h3','p','em','strong','br','hr','blockquote','ul','ol','li','pre','code','sup','sub','figure']);
+function cleanNode(n){
+  let h='';
+  for(const c of n.childNodes){
+    if(c.nodeType===3){h+=esc(c.nodeValue);continue;}
+    if(c.nodeType!==1)continue;
+    const t=c.localName.toLowerCase();
+    if(['script','style','iframe','object','embed','svg','math','template'].includes(t))continue;
+    if(t==='img'){
+      const src=c.getAttribute('src')||'';
+      if(/^data:image\/(jpeg|png|webp|gif);base64,[A-Za-z0-9+\/=]+$/.test(src)&&src.length<4000000)h+='<img src="'+src+'" alt="'+esc(c.getAttribute('alt')||'')+'">';
+      continue;
+    }
+    if(!OK_TAGS.has(t)){h+=cleanNode(c);continue;}
+    if(t==='br'||t==='hr'){h+='<'+t+'>';continue;}
+    h+='<'+t+(t==='p'&&c.classList.contains('center')?' class="center"':'')+(t==='figure'?' class="fig"':'')+'>'+cleanNode(c)+'</'+t+'>';
+  }
+  return h;
+}
+function sanitizeHtml(html){
+  const d=new DOMParser().parseFromString('<body>'+html+'</body>','text/html');
+  return cleanNode(d.body);
+}
+
+/* ---------- Parser: EPUB ---------- */
+function resolvePath(base,href){
+  href=String(href||'').split('#')[0].split('?')[0];
+  try{href=decodeURIComponent(href);}catch(e){}
+  const dir=base?base.split('/').slice(0,-1):[];
+  const parts=(href.startsWith('/')?[]:dir).concat(href.split('/'));
+  const out=[];
+  for(const p of parts){if(p===''||p==='.')continue;if(p==='..')out.pop();else out.push(p);}
+  return out.join('/');
+}
+function parseXhtml(str){
+  let d=new DOMParser().parseFromString(str,'application/xhtml+xml');
+  if(d.getElementsByTagName('parsererror').length)d=new DOMParser().parseFromString(str,'text/html');
+  return d;
+}
+async function parseEpub(buf){
+  const z=await unzip(buf);
+  const cont=await readEntry(z,'META-INF/container.xml');
+  if(!cont)throw new Error('EPUB tidak valid (container.xml tidak ada)');
+  const cdoc=new DOMParser().parseFromString(cont,'application/xml');
+  const rf=cdoc.getElementsByTagNameNS('*','rootfile')[0];
+  const opfPath=rf&&rf.getAttribute('full-path');
+  if(!opfPath)throw new Error('EPUB tidak valid (OPF tidak ditemukan)');
+  const opfXml=await readEntry(z,opfPath);
+  if(!opfXml)throw new Error('EPUB tidak valid (OPF kosong)');
+  const opf=new DOMParser().parseFromString(opfXml,'application/xml');
+  const first=tag=>{const e=opf.getElementsByTagNameNS('*',tag)[0];return e?e.textContent.trim():'';};
+  const title=first('title'),author=first('creator');
+  const manifest={};
+  for(const it of opf.getElementsByTagNameNS('*','item')){
+    manifest[it.getAttribute('id')]={href:it.getAttribute('href')||'',type:it.getAttribute('media-type')||'',props:it.getAttribute('properties')||''};
+  }
+  const spine=[];
+  for(const r of opf.getElementsByTagNameNS('*','itemref')){
+    if((r.getAttribute('linear')||'yes')==='no')continue;
+    spine.push(r.getAttribute('idref'));
+  }
+  /* sampul */
+  let cover='';
+  try{
+    let cid='';
+    for(const m of opf.getElementsByTagNameNS('*','meta'))if(m.getAttribute('name')==='cover')cid=m.getAttribute('content');
+    let ci=manifest[cid];
+    if(!ci)ci=Object.values(manifest).find(x=>/cover-image/.test(x.props));
+    if(ci&&/^image\//.test(ci.type)){
+      const bytes=await readBytes(z,resolvePath(opfPath,ci.href));
+      if(bytes)cover=await makeCover(new Blob([bytes],{type:ci.type}));
+    }
+  }catch(e){cover='';}
+  /* daftar isi → judul bab */
+  const toc={};
+  const addToc=(base,href,label)=>{
+    const p=resolvePath(base,href);label=(label||'').replace(/\s+/g,' ').trim();
+    if(p&&label&&!toc[p])toc[p]=label;
+  };
+  try{
+    for(const id in manifest){
+      const it=manifest[id];
+      if(/\bnav\b/.test(it.props)){
+        const np=resolvePath(opfPath,it.href),s=await readEntry(z,np);
+        if(s){
+          const d=parseXhtml(s),navs=[...d.getElementsByTagNameNS('*','nav')];
+          const nav=navs.find(n=>/toc/.test(n.getAttribute('epub:type')||''))||navs[0];
+          if(nav)for(const a of nav.getElementsByTagNameNS('*','a'))addToc(np,a.getAttribute('href'),a.textContent);
+        }
+      }else if(it.type==='application/x-dtbncx+xml'){
+        const np=resolvePath(opfPath,it.href),s=await readEntry(z,np);
+        if(s){
+          const d=new DOMParser().parseFromString(s,'application/xml');
+          for(const pt of d.getElementsByTagNameNS('*','navPoint')){
+            const lab=pt.getElementsByTagNameNS('*','text')[0],con=pt.getElementsByTagNameNS('*','content')[0];
+            if(lab&&con)addToc(np,con.getAttribute('src'),lab.textContent);
+          }
+        }
+      }
+    }
+  }catch(e){}
+  /* isi */
+  const chapters=[];let w=0;const budget={n:0};
+  for(let i=0;i<spine.length;i++){
+    const it=manifest[spine[i]];if(!it)continue;
+    if(!/html|xml/.test(it.type)&&!/\.x?html?$/i.test(it.href))continue;
+    const path=resolvePath(opfPath,it.href);
+    const str=await readEntry(z,path);if(!str)continue;
+    const d=parseXhtml(str),body=d.getElementsByTagNameNS('*','body')[0];
+    if(!body)continue;
+    await inlineImages(body,async src=>readBytes(z,resolvePath(path,src)),budget);
+    const blocks=domToBlocks(body);
+    const tw=wordsOf(blocks);
+    const t0=toc[path]||'';
+    if(!blocks.length||(tw<3&&!t0&&!blocks.some(b=>b.img)))continue;
+    const h0=blocks.find(b=>b.k==='h');
+    let ttl=t0||(h0?h0.text.slice(0,120):'')||('Bagian '+(chapters.length+1));
+    if(t0&&blocks[0].k!=='h')blocks.unshift({k:'h',lvl:1,html:esc(t0),text:t0});
+    chapters.push({title:ttl.slice(0,120),html:blocks.map(renderBlock).join('')});
+    w+=tw;
+    if(i%15===0)await tick();
+  }
+  if(!chapters.length)throw new Error('Tidak ada teks yang bisa dibaca di EPUB');
+  return {chapters,title,author,cover,words:w};
+}
+
+/* ---------- Parser: CHM ---------- */
+async function parseChm(buf){
+  const chm=chmParse(new Uint8Array(buf));
+  const names=[...chm.entries.keys()].filter(n=>n.length>1&&n[0]==='/'&&!n.endsWith('/')&&!/^\/(#|\$)/.test(n));
+  const lookup=new Map();
+  names.forEach(n=>lookup.set(n.slice(1).toLowerCase(),n));
+  let title='',hint='',titleBytes=null;
+  try{
+    const sys=chm.getFile('/#SYSTEM');
+    if(sys&&sys.length>8){
+      const dv=new DataView(sys.buffer,sys.byteOffset,sys.byteLength);
+      let p=4;
+      while(p+4<=sys.length){
+        const code=dv.getUint16(p,true),len=dv.getUint16(p+2,true);p+=4;
+        if(code===3&&!titleBytes)titleBytes=sys.slice(p,p+len);
+        if(code===4&&len>=4)hint=lcidCharset(dv.getUint32(p,true))||hint;
+        p+=len;
+      }
+    }
+    if(titleBytes)title=decodeText(titleBytes,{noMeta:true,hint}).replace(/\0+$/,'').trim();
+  }catch(e){}
+  const refs=[],seen=new Set();
+  const addRef=(ttl,local)=>{
+    let l=String(local||'').split('#')[0].split('?')[0];
+    try{l=decodeURIComponent(l);}catch(e){}
+    l=l.replace(/\\/g,'/').replace(/^(\.\/|\/)+/,'').toLowerCase();
+    const real=lookup.get(l);
+    if(!real||seen.has(real)||!/\.html?$/i.test(real))return;
+    seen.add(real);refs.push({name:real,title:(ttl||'').replace(/\s+/g,' ').trim()});
+  };
+  const hhc=names.find(n=>/\.hhc$/i.test(n));
+  if(hhc){
+    const d=new DOMParser().parseFromString(decodeText(chm.getFile(hhc),{hint}),'text/html');
+    for(const o of d.getElementsByTagName('object')){
+      if((o.getAttribute('type')||'').toLowerCase()!=='text/sitemap')continue;
+      let nm='',loc='';
+      for(const pr of o.getElementsByTagName('param')){
+        const k=(pr.getAttribute('name')||'').toLowerCase();
+        if(k==='name'&&!nm)nm=pr.getAttribute('value')||'';
+        else if(k==='local'&&!loc)loc=pr.getAttribute('value')||'';
+      }
+      if(loc)addRef(nm,loc);
+    }
+  }
+  if(!refs.length){
+    names.filter(n=>/\.html?$/i.test(n)).sort((a,b)=>a.localeCompare(b,'id',{numeric:true})).forEach(n=>addRef('',n.slice(1)));
+  }
+  const chapters=[];let w=0;const budget={n:0};
+  for(let i=0;i<refs.length;i++){
+    const r=refs[i],bytes=chm.getFile(r.name);
+    if(!bytes)continue;
+    const d=new DOMParser().parseFromString(decodeText(bytes,{hint}),'text/html');
+    await inlineImages(d.body,async src=>{const real=lookup.get(resolvePath(r.name,src).toLowerCase());return real?chm.getFile(real):null;},budget);
+    const blocks=domToBlocks(d.body);
+    const tw=wordsOf(blocks);
+    if(!blocks.length||(tw<3&&!r.title&&!blocks.some(b=>b.img)))continue;
+    const h0=blocks.find(b=>b.k==='h');
+    const ttl=r.title||(h0?h0.text.slice(0,120):'')||('Bagian '+(chapters.length+1));
+    if(r.title&&blocks[0].k!=='h')blocks.unshift({k:'h',lvl:1,html:esc(r.title),text:r.title});
+    chapters.push({title:ttl.slice(0,120),html:blocks.map(renderBlock).join('')});
+    w+=tw;
+    if(i%20===0)await tick();
+  }
+  if(!chapters.length)throw new Error('Tidak ada teks yang bisa dibaca di CHM');
+  return {chapters,title,author:'',words:w};
+}
+const chaptersOf=(res,t)=>res.chapters||buildChapters(res.blocks,t);
+const wordsOfRes=res=>res.words!=null?res.words:wordsOf(res.blocks);
+
+
+/* ---------- Parser: PDF (pustaka pdf.js dimuat hanya saat dibutuhkan) ---------- */
+let pdfjsP=null;
+function loadScript(src){
+  return new Promise((res,rej)=>{
+    const s=document.createElement('script');
+    s.src=src;s.onload=res;s.onerror=()=>rej(new Error('gagal memuat '+src.split('/').pop()));
+    document.head.appendChild(s);
+  });
+}
+function loadPdfJs(){
+  if(window.pdfjsLib)return Promise.resolve(window.pdfjsLib);
+  if(pdfjsP)return pdfjsP;
+  const base='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/';
+  pdfjsP=(async()=>{
+    await loadScript(base+'pdf.min.js');
+    await loadScript(base+'pdf.worker.min.js');
+    if(!window.pdfjsLib)throw new Error('pustaka tidak termuat');
+    window.pdfjsLib.GlobalWorkerOptions.workerSrc=base+'pdf.worker.min.js';
+    return window.pdfjsLib;
+  })().catch(e=>{pdfjsP=null;throw new Error('Impor PDF perlu internet satu kali untuk memuat pembaca PDF ('+e.message+'). Buku yang sudah diimpor tetap bisa dibaca offline.');});
+  return pdfjsP;
+}
+const CJK_RE=/[\u3040-\u30ff\u3400-\u9fff\uac00-\ud7af]/;
+const median=a=>{if(!a.length)return 0;const s=[...a].sort((x,y)=>x-y);return s[Math.floor(s.length/2)];};
+/* item teks satu halaman → baris-baris {text,x,y,size,endX} */
+function pdfPageLines(items){
+  const rows=[];let cur=null;
+  for(const it of items){
+    if(typeof it.str!=='string')continue;
+    if(it.str===''){if(it.hasEOL&&cur){rows.push(cur);cur=null;}continue;}
+    const x=it.transform[4],y=it.transform[5],size=Math.abs(it.transform[3])||it.height||10,w=it.width||0;
+    if(cur&&Math.abs(y-cur.y)<=size*0.5){
+      const gap=x-cur.endX;
+      if(gap>size*0.25&&!/\s$/.test(cur.text)&&!/^\s/.test(it.str))cur.text+=' ';
+      cur.text+=it.str;cur.endX=x+w;
+      if(size>cur.size)cur.size=size;
+    }else{
+      if(cur)rows.push(cur);
+      cur={text:it.str,x,y,size,endX:x+w};
+    }
+    if(it.hasEOL){rows.push(cur);cur=null;}
+  }
+  if(cur)rows.push(cur);
+  return rows.filter(r=>r.text.trim());
+}
+/* baris semua halaman → blok (judul & paragraf) */
+function pdfBlocks(pages){
+  const norm=t=>t.toLowerCase().replace(/\d+/g,'#').replace(/\s+/g,' ').trim();
+  const counts=new Map();
+  pages.forEach(ls=>{
+    if(!ls.length)return;
+    const ends=ls.length===1?[ls[0]]:[ls[0],ls[ls.length-1]];
+    ends.forEach(l=>{const k=norm(l.text);counts.set(k,(counts.get(k)||0)+1);});
+  });
+  const thr=Math.max(3,Math.ceil(pages.length*0.4));
+  const isHF=l=>{const k=norm(l.text);return /^[-–—\s]*#[-–—\s]*$/.test(k)||(counts.get(k)||0)>=thr;};
+  const stats=pages.map(ls=>{
+    const xs=new Map();
+    ls.forEach(l=>{const k=Math.round(l.x/2)*2;xs.set(k,(xs.get(k)||0)+l.text.length);});
+    let left=0,mc=-1;xs.forEach((c,k)=>{if(c>mc||(c===mc&&k<left)){mc=c;left=k;}});
+    const diffs=[];
+    for(let i=1;i<ls.length;i++){const d=ls[i-1].y-ls[i].y;if(d>0)diffs.push(d);}
+    return {left,gap:median(diffs),maxEnd:Math.max(0,...ls.map(l=>l.endX))};
+  });
+  const flat=[];
+  pages.forEach((ls,pi)=>ls.forEach((l,li)=>{
+    if((li===0||li===ls.length-1)&&isHF(l))return;
+    flat.push(Object.assign({},l,{page:pi}));
+  }));
+  const sizeCount=new Map();
+  flat.forEach(l=>{const k=Math.round(l.size*2)/2;sizeCount.set(k,(sizeCount.get(k)||0)+l.text.length);});
+  let body=10,bc=-1;sizeCount.forEach((c,k)=>{if(c>bc){bc=c;body=k;}});
+  const blocks=[];let para=null,prev=null,prevHead=false;
+  const endPara=()=>{
+    if(para){const t=para.text.trim();if(t)blocks.push({k:'p',html:esc(t),text:t,cls:'',page:para.page});para=null;}
+  };
+  for(const l of flat){
+    const st=stats[l.page],t=l.text.trim();
+    const sameP=prev&&prev.page===l.page;
+    const gapBig=!!(sameP&&st.gap&&(prev.y-l.y)>st.gap*1.5);
+    const indent=l.x-st.left>l.size*0.8;
+    const endsSent=!!prev&&/[.!?…。！？"”»)]$/.test(prev.text.trim());
+    const prevShort=!!prev&&prev.endX<stats[prev.page].maxEnd-prev.size*3;
+    const newPara=!para||gapBig||indent||(endsSent&&prevShort);
+    const sizeHead=l.size>=body*1.25&&t.length<=90;
+    const wordHead=newPara&&t.length<=50&&looksHeading(t);
+    if(sizeHead||wordHead){
+      endPara();
+      const last=blocks[blocks.length-1];
+      if(prevHead&&last&&last.k==='h'&&last._size===l.size&&last.page===l.page){
+        last.text+=' '+t;last.html=esc(last.text);
+      }else blocks.push({k:'h',lvl:1,html:esc(t),text:t,page:l.page,_size:l.size});
+      prevHead=true;prev=l;continue;
+    }
+    prevHead=false;
+    if(newPara){endPara();para={text:t,page:l.page};}
+    else{
+      const a=para.text;
+      if(/[A-Za-z\u00C0-\u024F]-$/.test(a)&&/^[a-z\u00DF-\u024F]/.test(t))para.text=a.slice(0,-1)+t;
+      else if(CJK_RE.test(a.slice(-1))||CJK_RE.test(t[0]))para.text=a+t;
+      else para.text=a+' '+t;
+    }
+    prev=l;
+  }
+  endPara();
+  return blocks;
+}
+async function pdfOutlinePages(pdf){
+  const out=[];
+  try{
+    let list=await pdf.getOutline();
+    if(!list)return out;
+    if(list.length===1&&list[0].items&&list[0].items.length>1)list=list[0].items;
+    for(const it of list){
+      let dest=it.dest;
+      if(typeof dest==='string')dest=await pdf.getDestination(dest);
+      if(!Array.isArray(dest)||dest[0]==null)continue;
+      const idx=typeof dest[0]==='object'?await pdf.getPageIndex(dest[0]):dest[0];
+      out.push({title:(it.title||'').replace(/\s+/g,' ').trim(),page:idx});
+    }
+  }catch(e){}
+  return out;
+}
+async function parsePdf(buf){
+  const lib=await loadPdfJs();
+  toast('Memuat PDF…',0);
+  let pdf;
+  try{
+    pdf=await lib.getDocument({data:new Uint8Array(buf),isEvalSupported:false,disableFontFace:true,useSystemFonts:true}).promise;
+  }catch(e){throw new Error(e&&e.name==='PasswordException'?'PDF dilindungi kata sandi':'PDF tidak bisa dibuka ('+((e&&e.message)||'rusak')+')');}
+  const n=pdf.numPages,pages=[],pageImgs=[],imgBudget={n:0};let chars=0;
+  for(let i=1;i<=n;i++){
+    const page=await pdf.getPage(i);
+    const tc=await page.getTextContent();
+    const ls=pdfPageLines(tc.items);
+    ls.forEach(l=>{chars+=l.text.length;});
+    pages.push(ls);
+    pageImgs.push(await pdfPageImages(page,lib,imgBudget));
+    page.cleanup();
+    if(i%5===0||i===n){toast('Membaca PDF: halaman '+i+'/'+n,0);await tick();}
+  }
+  if(chars<30){try{pdf.destroy();}catch(e){}throw new Error('PDF ini tidak berisi teks (hasil pindai/gambar). OCR belum didukung — coba ubah dulu ke teks, mis. unggah ke Google Drive lalu buka dengan Google Dokumen, atau pakai Google Lens.');}
+  let title='',author='';
+  try{const m=await pdf.getMetadata();title=((m.info&&m.info.Title)||'').trim();author=((m.info&&m.info.Author)||'').trim();}catch(e){}
+  const blocks=pdfBlocks(pages);
+  for(let pi=pageImgs.length-1;pi>=0;pi--){
+    if(!pageImgs[pi]||!pageImgs[pi].length)continue;
+    let at=-1;for(let k=blocks.length-1;k>=0;k--){if(blocks[k].page<=pi){at=k;break;}}
+    blocks.splice(at+1,0,...pageImgs[pi].map(u=>({k:'html',html:'<figure class="fig"><img src="'+u+'" alt=""></figure>',text:'',img:true,page:pi})));
+  }
+  if(!blocks.length)throw new Error('Tidak ada teks yang bisa dibaca di PDF');
+  const marks=await pdfOutlinePages(pdf);
+  try{pdf.destroy();}catch(e){}
+  const uniq=[],seenP=new Set();
+  marks.sort((a,b)=>a.page-b.page).forEach(m=>{if(m.title&&!seenP.has(m.page)){seenP.add(m.page);uniq.push(m);}});
+  if(uniq.length>=2){
+    const chapters=[];
+    const front=blocks.filter(b=>b.page<uniq[0].page);
+    if(front.length&&wordsOf(front)>=30)chapters.push({title:'Pembuka',html:front.map(renderBlock).join('')});
+    uniq.forEach((m,i)=>{
+      const end=i+1<uniq.length?uniq[i+1].page:Infinity;
+      const bl=blocks.filter(b=>b.page>=m.page&&b.page<end);
+      if(!bl.length)return;
+      if(bl[0].k!=='h')bl.unshift({k:'h',lvl:1,html:esc(m.title),text:m.title});
+      chapters.push({title:m.title.slice(0,120),html:bl.map(renderBlock).join('')});
+    });
+    if(chapters.length>=2)return {chapters,title,author,words:wordsOf(blocks)};
+  }
+  return {blocks,title,author};
+}
+
+/* ---------- Gambar saat impor ---------- */
+const imagesOn=()=>settings.importImages!=='off';
+function sniffType(b){
+  if(!b||b.length<12)return null;
+  if(b[0]===0xFF&&b[1]===0xD8)return 'image/jpeg';
+  if(b[0]===0x89&&b[1]===0x50&&b[2]===0x4E&&b[3]===0x47)return 'image/png';
+  if(b[0]===0x47&&b[1]===0x49&&b[2]===0x46)return 'image/gif';
+  if(b[0]===0x52&&b[1]===0x49&&b[2]===0x46&&b[3]===0x46&&b[8]===0x57&&b[9]===0x45)return 'image/webp';
+  return null;
+}
+function readDataUrl(blob){
+  return new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(fr.result);fr.onerror=()=>rej(fr.error);fr.readAsDataURL(blob);});
+}
+function loadImg(src){
+  return new Promise((res,rej)=>{const im=new Image();im.onload=()=>res(im);im.onerror=()=>rej(new Error('gambar rusak'));im.src=src;});
+}
+function drawToDataUri(srcEl,w,h){
+  const sc=Math.min(1,1000/w),cw=Math.max(1,Math.round(w*sc)),ch=Math.max(1,Math.round(h*sc));
+  const c=document.createElement('canvas');c.width=cw;c.height=ch;
+  const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,cw,ch);g.drawImage(srcEl,0,0,cw,ch);
+  return c.toDataURL('image/jpeg',0.82);
+}
+async function imageToDataUri(bytes,type){
+  const url=await readDataUrl(new Blob([bytes],{type}));
+  const im=await loadImg(url);
+  const w=im.naturalWidth,h=im.naturalHeight;
+  if(w<24||h<24)return null;
+  if(url.length<160000&&w<=1000)return {uri:url,w,h};
+  return {uri:drawToDataUri(im,w,h),w,h};
+}
+/* ganti src semua <img> dengan data URI (atau hapus bila tak bisa dimuat) */
+async function inlineImages(root,resolve,budget){
+  const imgs=[...root.getElementsByTagName('img')];
+  for(const im of imgs){
+    const src=im.getAttribute('src')||'';
+    if(/^data:image\//i.test(src))continue;
+    let uri=null;
+    if(imagesOn()&&budget.n<200){
+      try{
+        const bytes=await resolve(src);
+        const type=bytes&&bytes.length>200?sniffType(bytes):null;
+        const r=type?await imageToDataUri(bytes,type):null;
+        if(r){uri=r.uri;budget.n++;}
+      }catch(e){}
+    }
+    if(uri)im.setAttribute('src',uri);else im.parentNode&&im.parentNode.removeChild(im);
+  }
+}
+async function docxImages(p,z,rels,budget){
+  const out=[];
+  if(!imagesOn())return out;
+  for(const bl of p.getElementsByTagNameNS('http://schemas.openxmlformats.org/drawingml/2006/main','blip')){
+    const rid=bl.getAttributeNS('http://schemas.openxmlformats.org/officeDocument/2006/relationships','embed');
+    if(!rid||!rels[rid]||budget.n>=200)continue;
+    try{
+      const bytes=await readBytes(z,resolvePath('word/document.xml',rels[rid]));
+      const type=bytes?sniffType(bytes):null;
+      const r=type?await imageToDataUri(bytes,type):null;
+      if(r){budget.n++;out.push({k:'html',html:'<figure class="fig"><img src="'+r.uri+'" alt=""></figure>',text:''});}
+    }catch(e){}
+  }
+  return out;
+}
+async function pdfObjToUri(o){
+  try{
+    const w=o.width,h=o.height;
+    if(!w||!h||w<80||h<80)return null;
+    const c=document.createElement('canvas');c.width=w;c.height=h;
+    const g=c.getContext('2d');
+    if(o.bitmap)g.drawImage(o.bitmap,0,0);
+    else if(o.data){
+      const id=g.createImageData(w,h),d=id.data,s=o.data;
+      if(o.kind===3||s.length===w*h*4)d.set(s.length>d.length?s.subarray(0,d.length):s);
+      else if(o.kind===2||s.length===w*h*3){for(let i=0,j=0;i<w*h;i++){d[j++]=s[i*3];d[j++]=s[i*3+1];d[j++]=s[i*3+2];d[j++]=255;}}
+      else if(o.kind===1){
+        const rb=(w+7)>>3;
+        for(let y=0;y<h;y++)for(let x=0;x<w;x++){const v=((s[y*rb+(x>>3)]>>(7-(x&7)))&1)?255:0,j=(y*w+x)*4;d[j]=d[j+1]=d[j+2]=v;d[j+3]=255;}
+      }else return null;
+      g.putImageData(id,0,0);
+    }else if(o.src||(typeof HTMLImageElement!=='undefined'&&o instanceof HTMLImageElement))g.drawImage(o,0,0,w,h);
+    else return null;
+    return drawToDataUri(c,w,h);
+  }catch(e){return null;}
+}
+async function pdfPageImages(page,lib,budget){
+  const out=[];
+  if(!imagesOn()||budget.n>=120)return out;
+  try{
+    const ops=await page.getOperatorList(),OPS=lib.OPS,seen=new Set();
+    for(let i=0;i<ops.fnArray.length&&out.length<8;i++){
+      const fn=ops.fnArray[i];
+      if(fn!==OPS.paintImageXObject&&fn!==OPS.paintJpegXObject)continue;
+      const name=ops.argsArray[i][0];
+      if(seen.has(name))continue;seen.add(name);
+      const obj=await new Promise(res=>{
+        let done=false;const to=setTimeout(()=>{if(!done){done=true;res(null);}},1500);
+        try{page.objs.get(name,o=>{if(!done){done=true;clearTimeout(to);res(o);}});}catch(e){clearTimeout(to);res(null);}
+      });
+      const uri=obj?await pdfObjToUri(obj):null;
+      if(uri){out.push(uri);budget.n++;}
+    }
+  }catch(e){}
+  return out;
+}
+
+/* ---------- Parser: HTML ---------- */
+async function parseHtmlFile(buf){
+  const d=new DOMParser().parseFromString(decodeText(new Uint8Array(buf)),'text/html');
+  await inlineImages(d.body,async()=>null,{n:0});
+  const blocks=domToBlocks(d.body);
+  const meta=d.querySelector('meta[name="author"]');
+  return {blocks,title:(d.title||'').trim(),author:meta?(meta.getAttribute('content')||'').trim():''};
+}
+
+/* ---------- Parser: FB2 ---------- */
+async function parseFb2(buf){
+  const u8=new Uint8Array(buf);
+  const head=new TextDecoder('latin1').decode(u8.subarray(0,200));
+  const em=/encoding\s*=\s*["']([\w\-]+)["']/i.exec(head);
+  let text;
+  try{text=new TextDecoder(em?em[1]:'utf-8').decode(u8);}catch(e){text=decodeText(u8,{noMeta:true});}
+  const d=new DOMParser().parseFromString(text,'application/xml');
+  if(d.getElementsByTagName('parsererror').length)throw new Error('File FB2 tidak valid');
+  const nsAll=(el,tag)=>[...el.getElementsByTagNameNS('*',tag)];
+  const g1=(el,tag)=>{const e=el.getElementsByTagNameNS('*',tag)[0];return e?e.textContent.replace(/\s+/g,' ').trim():'';};
+  const ti=d.getElementsByTagNameNS('*','title-info')[0];
+  const title=ti?g1(ti,'book-title'):'';
+  let author='';
+  if(ti){const a=ti.getElementsByTagNameNS('*','author')[0];if(a)author=[g1(a,'first-name'),g1(a,'middle-name'),g1(a,'last-name')].filter(Boolean).join(' ');}
+  const bins=new Map();
+  for(const b of nsAll(d,'binary'))bins.set(b.getAttribute('id'),{data:(b.textContent||'').replace(/\s+/g,'')});
+  const budget={n:0};
+  const hrefOf=el=>(el.getAttribute('l:href')||el.getAttribute('xlink:href')||el.getAttributeNS('http://www.w3.org/1999/xlink','href')||'').replace(/^#/,'');
+  const binBytes=id=>{const b=bins.get(id);if(!b)return null;try{const s=atob(b.data),u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u;}catch(e){return null;}};
+  let cover='';
+  try{
+    const cp=ti&&ti.getElementsByTagNameNS('*','coverpage')[0],im=cp&&cp.getElementsByTagNameNS('*','image')[0];
+    const bytes=im?binBytes(hrefOf(im)):null,type=bytes?sniffType(bytes):null;
+    if(type)cover=await makeCover(new Blob([bytes],{type}));
+  }catch(e){}
+  const imgBlock=async el=>{
+    if(!imagesOn()||budget.n>=200)return null;
+    try{
+      const bytes=binBytes(hrefOf(el)),type=bytes?sniffType(bytes):null;
+      const r=type?await imageToDataUri(bytes,type):null;
+      if(r){budget.n++;return {k:'html',html:'<figure class="fig"><img src="'+r.uri+'" alt=""></figure>',text:''};}
+    }catch(e){}
+    return null;
+  };
+  const inl=n=>{
+    let h='';
+    for(const c of n.childNodes){
+      if(c.nodeType===3)h+=esc(c.nodeValue.replace(/\s+/g,' '));
+      else if(c.nodeType===1){
+        const t=c.localName,k=inl(c);
+        h+=t==='strong'?'<strong>'+k+'</strong>':t==='emphasis'?'<em>'+k+'</em>':t==='sup'?'<sup>'+k+'</sup>':t==='sub'?'<sub>'+k+'</sub>':t==='image'?'':k;
+      }
+    }
+    return h;
+  };
+  const blocks=[];
+  const textOf=el=>el.textContent.replace(/\s+/g,' ').trim();
+  const handle=async(c,depth)=>{
+    const t=c.localName;
+    if(t==='title'){const tx=textOf(c);if(tx)blocks.push({k:'h',lvl:depth<=1?1:depth===2?2:3,html:esc(tx),text:tx});}
+    else if(t==='section')for(const x of c.children)await handle(x,depth+1);
+    else if(t==='p'){const tx=textOf(c);if(tx)blocks.push({k:'p',html:inl(c).trim(),text:tx,cls:''});}
+    else if(t==='subtitle'){const tx=textOf(c);if(tx)blocks.push({k:'h',lvl:3,html:esc(tx),text:tx});}
+    else if(t==='epigraph'||t==='cite'){const tx=textOf(c);if(tx)blocks.push({k:'html',html:'<blockquote>'+esc(tx)+'</blockquote>',text:tx});}
+    else if(t==='poem'){
+      const lines=nsAll(c,'v').map(v=>textOf(v)).filter(Boolean);
+      if(lines.length)blocks.push({k:'html',html:'<blockquote>'+lines.map(esc).join('<br>')+'</blockquote>',text:lines.join(' ')});
+    }else if(t==='image'){const b=await imgBlock(c);if(b)blocks.push(b);}
+  };
+  for(const body of nsAll(d,'body')){
+    if(body.getAttribute('name')==='notes')continue;
+    for(const c of body.children)await handle(c,c.localName==='section'?0:1);
+  }
+  if(!blocks.length)throw new Error('Tidak ada teks di FB2');
+  return {blocks,title,author,cover};
+}
+
+/*RTF-BEGIN*/
+const RTF_SKIP=new Set(['fonttbl','colortbl','stylesheet','info','pict','header','footer','headerl','headerr','headerf','footerl','footerr','footerf','footnote','object','themedata','colorschememapping','datastore','latentstyles','listtable','listoverridetable','rsidtbl','generator','fldinst','xmlnstbl','pgdsctbl','revtbl','private','blipuid']);
+const RTF_SYM={emdash:'—',endash:'–',lquote:'‘',rquote:'’',ldblquote:'“',rdblquote:'”',bullet:'•',emspace:' ',enspace:' '};
+function rtfParagraphs(src){
+  let cp=1252;const mcp=/\\ansicpg(\d+)/.exec(src.slice(0,3000));if(mcp)cp=+mcp[1];
+  const label=cp===936?'gbk':cp===950?'big5':cp===932?'shift_jis':cp===949?'euc-kr':cp===65001?'utf-8':'windows-'+cp;
+  let dec;try{dec=new TextDecoder(label);}catch(e){dec=new TextDecoder('windows-1252');}
+  const paras=[],ucStack=[];
+  let cur='',bytes=[],skipDepth=-1,depth=0,uc=1,skipN=0,i=0;
+  const n=src.length;
+  const flushBytes=()=>{if(bytes.length){if(skipDepth<0)cur+=dec.decode(Uint8Array.from(bytes));bytes=[];}};
+  const text=ch=>{flushBytes();if(skipDepth<0)cur+=ch;};
+  const endP=()=>{flushBytes();const t=cur.replace(/\s+/g,' ').trim();if(t)paras.push(t);cur='';};
+  while(i<n){
+    const c=src[i];
+    if(c==='{'){
+      depth++;ucStack.push(uc);i++;
+      if(skipDepth<0&&src[i]==='\\'){
+        if(src[i+1]==='*')skipDepth=depth;
+        else{const m=/^\\([a-zA-Z]+)/.exec(src.substr(i,24));if(m&&RTF_SKIP.has(m[1]))skipDepth=depth;}
+      }
+      continue;
+    }
+    if(c==='}'){flushBytes();if(skipDepth===depth)skipDepth=-1;depth--;const u=ucStack.pop();uc=u===undefined?1:u;i++;continue;}
+    if(c==='\\'){
+      const nx=src[i+1];
+      if(nx==="'"){
+        const v=parseInt(src.substr(i+2,2),16);i+=4;
+        if(skipN>0){skipN--;continue;}
+        if(skipDepth<0&&!isNaN(v))bytes.push(v);
+        continue;
+      }
+      if(nx!==undefined&&/[a-zA-Z]/.test(nx)){
+        const m=/^\\([a-zA-Z]+)(-?\d+)? ?/.exec(src.substr(i,40));
+        const w=m[1],p=m[2]!==undefined?parseInt(m[2],10):null;i+=m[0].length;
+        if(w==='par'||w==='sect'||w==='page')endP();
+        else if(w==='line'||w==='tab')text(' ');
+        else if(w==='u'){flushBytes();const code=p<0?p+65536:p;if(skipDepth<0)cur+=String.fromCharCode(code);skipN=uc;}
+        else if(w==='uc')uc=p===null?1:p;
+        else if(RTF_SYM[w])text(RTF_SYM[w]);
+        continue;
+      }
+      i+=2;
+      if(nx==='\\'||nx==='{'||nx==='}')text(nx);
+      else if(nx==='~')text('\u00a0');
+      else if(nx==='\n'||nx==='\r')endP();
+      continue;
+    }
+    if(c==='\r'||c==='\n'){i++;continue;}
+    if(skipN>0){skipN--;i++;continue;}
+    text(c);i++;
+  }
+  endP();
+  return paras;
+}
+/*RTF-END*/
+async function parseRtf(buf){
+  const paras=rtfParagraphs(new TextDecoder('latin1').decode(new Uint8Array(buf)));
+  if(!paras.length)throw new Error('Tidak ada teks di file RTF');
+  return {blocks:paras.map(t=>looksHeading(t)?{k:'h',lvl:1,html:esc(t),text:t}:{k:'p',html:esc(t),text:t,cls:''})};
+}
+
+/*MOBI-BEGIN*/
+function palmDecompress(src){
+  const out=[];let i=0;
+  while(i<src.length){
+    const c=src[i++];
+    if(c===0||(c>=9&&c<=0x7f))out.push(c);
+    else if(c>=1&&c<=8){for(let k=0;k<c&&i<src.length;k++)out.push(src[i++]);}
+    else if(c>=0xc0){out.push(32,c^0x80);}
+    else{
+      const c2=(c<<8)|src[i++],dist=(c2>>3)&0x7ff,len=(c2&7)+3;
+      for(let k=0;k<len;k++)out.push(dist>0&&out.length>=dist?out[out.length-dist]:32);
+    }
+  }
+  return Uint8Array.from(out);
+}
+function mobiTrail(data,flags){
+  let num=0;
+  for(let bit=15;bit>0;bit--){
+    if(!(flags&(1<<bit)))continue;
+    let pos=data.length-num,res=0,bp=0;
+    while(true){
+      const v=data[pos-1];
+      res|=(v&0x7f)<<bp;bp+=7;pos--;
+      if((v&0x80)||bp>=28||pos<=0)break;
+    }
+    num+=res;
+  }
+  if(flags&1&&data.length-num-1>=0)num+=(data[data.length-num-1]&3)+1;
+  return num;
+}
+function mobiExtract(buf){
+  const u8=new Uint8Array(buf),dv=new DataView(buf);
+  if(u8.length<100)throw new Error('File terlalu kecil');
+  const type=String.fromCharCode(...u8.subarray(60,68));
+  if(type!=='BOOKMOBI'&&type!=='TEXtREAd')throw new Error('Bukan file MOBI/AZW');
+  const n=dv.getUint16(76,false),off=[];
+  for(let i=0;i<n;i++)off.push(dv.getUint32(78+i*8,false));
+  off.push(u8.length);
+  const rec=i=>(i>=0&&i<n)?u8.subarray(off[i],off[i+1]):null;
+  const r0=rec(0),d0=new DataView(r0.buffer,r0.byteOffset,r0.byteLength);
+  const comp=d0.getUint16(0,false),textLen=d0.getUint32(4,false),recCount=d0.getUint16(8,false),crypt=d0.getUint16(12,false);
+  if(crypt)throw new Error('Buku ini dikunci DRM sehingga tidak bisa dibuka');
+  if(comp!==1&&comp!==2)throw new Error('Kompresi MOBI jenis HUFF/CDIC belum didukung');
+  let enc=1252,flags=0,firstImg=-1,title='',author='',coverOff=-1,version=0;
+  if(r0.length>=24&&String.fromCharCode(...r0.subarray(16,20))==='MOBI'){
+    const hdrLen=d0.getUint32(20,false);
+    enc=d0.getUint32(28,false);version=d0.getUint32(36,false);
+    if(r0.length>=112)firstImg=d0.getUint32(108,false);
+    if(hdrLen>=0xE4&&r0.length>=0xF4)flags=d0.getUint16(0xF2,false);
+    const td=new TextDecoder(enc===65001?'utf-8':'windows-1252');
+    const nameOff=d0.getUint32(84,false),nameLen=d0.getUint32(88,false);
+    if(nameOff&&nameLen&&nameOff+nameLen<=r0.length)title=td.decode(r0.subarray(nameOff,nameOff+nameLen));
+    const ep=16+hdrLen;
+    if(r0.length>=132&&(d0.getUint32(128,false)&0x40)&&ep+12<=r0.length&&String.fromCharCode(...r0.subarray(ep,ep+4))==='EXTH'){
+      const cnt=d0.getUint32(ep+8,false);let p=ep+12;
+      for(let k=0;k<cnt&&p+8<=r0.length;k++){
+        const t=d0.getUint32(p,false),l=d0.getUint32(p+4,false);
+        if(l<8)break;
+        const data=r0.subarray(p+8,p+l);
+        if(t===100&&!author)author=td.decode(data);
+        else if(t===503)title=td.decode(data);
+        else if(t===201&&data.length>=4)coverOff=new DataView(data.buffer,data.byteOffset,4).getUint32(0,false);
+        p+=l;
+      }
+    }
+  }
+  const parts=[];
+  for(let i=1;i<=recCount&&i<n;i++){
+    let data=rec(i);
+    if(flags){const tr=mobiTrail(data,flags);if(tr>0&&tr<data.length)data=data.subarray(0,data.length-tr);}
+    parts.push(comp===2?palmDecompress(data):data);
+  }
+  const total=parts.reduce((a,p)=>a+p.length,0),text=new Uint8Array(total);
+  let q=0;for(const p of parts){text.set(p,q);q+=p.length;}
+  const html=new TextDecoder(enc===65001?'utf-8':'windows-1252').decode(text.subarray(0,textLen?Math.min(total,textLen):total));
+  return {html,title:title.trim(),author:author.trim(),version,rec,firstImg,coverOff};
+}
+/*MOBI-END*/
+async function parseMobi(buf){
+  const m=mobiExtract(buf);
+  let html=m.html.replace(/<mbp:pagebreak[^>]*>/gi,'<hr class="pb">').replace(/<\/?mbp:[^>]*>/gi,'')
+    .replace(/<img\b[^>]*?recindex=["']?(\d+)["']?[^>]*>/gi,(t,k)=>'<img src="@rec:'+parseInt(k,10)+'">');
+  const budget={n:0};
+  const ok=m.firstImg>0&&m.firstImg!==0xFFFFFFFF;
+  const resolve=async src=>{const mm=/^@rec:(\d+)$/.exec(src);return mm&&ok?m.rec(m.firstImg+parseInt(mm[1],10)-1):null;};
+  let cover='';
+  try{
+    if(ok&&m.coverOff>=0){const b=m.rec(m.firstImg+m.coverOff),t=b?sniffType(b):null;if(t)cover=await makeCover(new Blob([b],{type:t}));}
+  }catch(e){}
+  const segs=html.split(/<hr class="pb">/),all=[],chapters=[];let words=0;
+  for(let i=0;i<segs.length;i++){
+    const d=new DOMParser().parseFromString(segs[i],'text/html');
+    await inlineImages(d.body,resolve,budget);
+    const blocks=domToBlocks(d.body);
+    if(!blocks.length)continue;
+    all.push(...blocks);
+    const tw=wordsOf(blocks);
+    if(tw<3&&!blocks.some(b=>b.img))continue;
+    const h0=blocks.find(b=>b.k==='h');
+    chapters.push({title:(h0?h0.text.slice(0,120):'Bagian '+(chapters.length+1)),html:blocks.map(renderBlock).join(''),w:tw});
+    words+=tw;
+    if(i%20===0)await tick();
+  }
+  if(!all.length)throw new Error('Tidak ada teks yang bisa dibaca di file ini');
+  if(chapters.length>=2)return {chapters,title:m.title,author:m.author,cover,words};
+  return {blocks:all,title:m.title,author:m.author,cover};
+}
+
+/* ---------- Impor ---------- */
+const baseName=n=>n.replace(/\.[^.]+$/,'').replace(/[_]+/g,' ').trim()||'Tanpa judul';
+const extOf=n=>{const e=(n.split('.').pop()||'').toLowerCase();return e==='markdown'?'md':e;};
+const wordsOf=blocks=>blocks.reduce((a,b)=>a+words(b.text),0);
+const byName=(a,b)=>a.name.localeCompare(b.name,'id',{numeric:true,sensitivity:'base'});
+const tick=()=>new Promise(r=>setTimeout(r,0));
+let appendTarget=null;
+
+async function parseFile(file){
+  const ext=extOf(file.name);
+  let res;
+  if(ext==='txt')res=parseTxt(decodeText(new Uint8Array(await file.arrayBuffer()),{noMeta:true}));
+  else if(ext==='md')res=parseMd(decodeText(new Uint8Array(await file.arrayBuffer()),{noMeta:true}));
+  else if(ext==='docx')res=await parseDocx(await file.arrayBuffer());
+  else if(ext==='epub')res=await parseEpub(await file.arrayBuffer());
+  else if(ext==='chm')res=await parseChm(await file.arrayBuffer());
+  else if(ext==='pdf')res=await parsePdf(await file.arrayBuffer());
+  else if(ext==='fb2')res=await parseFb2(await file.arrayBuffer());
+  else if(ext==='html'||ext==='htm'||ext==='xhtml')res=await parseHtmlFile(await file.arrayBuffer());
+  else if(ext==='rtf')res=await parseRtf(await file.arrayBuffer());
+  else if(['mobi','azw','azw3','prc'].includes(ext))res=await parseMobi(await file.arrayBuffer());
+  else throw new Error('Format .'+ext+' tidak didukung');
+  if(!(res.chapters?res.chapters.length:res.blocks.length))throw new Error('File kosong / tidak ada teks');
+  res.ext=ext;
+  return res;
+}
+async function saveNewBook(title,author,ext,size,chapters,totalWords,cover){
+  const dup=findDup(title,totalWords,size);
+  if(dup&&(await dupDecision(title,dup))==='skip')return null;
+  const meta={id:uid(),title,author:author||'',ext,size,words:totalWords,chapters:chapters.length,
+    added:Date.now(),lastRead:0,ch:0,pos:0,bookmarks:[]};
+  if(cover)meta.cover=cover;
+  await dbPut('content',{id:meta.id,chapters});
+  await dbPut('meta',meta);
+  books.push(meta);
+  return meta;
+}
+async function importFile(file){
+  const res=await parseFile(file);
+  const title=res.title||baseName(file.name);
+  return await saveNewBook(title,res.author,res.ext,file.size,chaptersOf(res,title),wordsOfRes(res),res.cover);
+}
+/* Gabungkan beberapa file (satu file = satu bab atau lebih) menjadi satu novel */
+async function mergeFiles(files,title){
+  files=[...files].sort(byName);dupPolicy=null;
+  const chapters=[],errs=[],exts=new Set();
+  let w=0,size=0,author='',cover='';
+  for(let i=0;i<files.length;i++){
+    toast('Menggabungkan '+(i+1)+'/'+files.length+'…',0);
+    try{
+      const res=await parseFile(files[i]);
+      chapters.push(...chaptersOf(res,baseName(files[i].name)));
+      w+=wordsOfRes(res);size+=files[i].size;exts.add(res.ext);
+      if(!cover&&res.cover)cover=res.cover;
+      if(!author&&res.author)author=res.author;
+    }catch(e){errs.push(files[i].name+' ('+(e.message||'gagal')+')');}
+    await tick();
+  }
+  if(!chapters.length)throw new Error(errs.join('; ')||'Tidak ada file yang bisa dibaca');
+  await saveNewBook(title,author,exts.size===1?[...exts][0]:'gabungan',size,chapters,w,cover);
+  return errs;
+}
+/* Tambahkan bab dari file ke buku yang sudah ada */
+async function appendFiles(id,files){
+  const meta=books.find(x=>x.id===id);if(!meta)return;
+  const c=await dbGet('content',id);if(!c){toast('Isi buku tidak ditemukan');return;}
+  files=[...files].sort(byName);
+  const errs=[];let added=0;
+  for(let i=0;i<files.length;i++){
+    toast('Menambah '+(i+1)+'/'+files.length+'…',0);
+    try{
+      const res=await parseFile(files[i]);
+      const chs=chaptersOf(res,baseName(files[i].name));
+      c.chapters.push(...chs);added+=chs.length;
+      meta.words+=wordsOfRes(res);meta.size+=files[i].size;
+    }catch(e){errs.push(files[i].name+' ('+(e.message||'gagal')+')');}
+    await tick();
+  }
+  if(added){meta.chapters=c.chapters.length;await dbPut('content',c);await dbPut('meta',meta);}
+  renderLib();
+  if(errs.length)toast((added?added+' bab ditambahkan. ':'')+'Gagal: '+errs.join('; '),6000);
+  else toast(added+' bab ditambahkan ke "'+meta.title+'" ✓');
+}
+async function importSeparate(files){
+  let ok=0,skipped=0;const errs=[];dupPolicy=null;
+  for(let i=0;i<files.length;i++){
+    toast('Memproses '+(i+1)+'/'+files.length+': '+files[i].name,0);
+    try{if(await importFile(files[i]))ok++;else skipped++;}catch(e){errs.push(files[i].name+' ('+(e.message||'gagal')+')');}
+    await tick();
+  }
+  renderLib();
+  if(errs.length)toast((ok?ok+' buku ditambahkan. ':'')+'Gagal: '+errs.join('; '),6000);
+  else toast(ok+' buku ditambahkan ✓'+(skipped?' · '+skipped+' duplikat dilewati':''));
+}
+function askMulti(files){
+  const sorted=[...files].sort(byName);
+  const guess=baseName(sorted[0].name).replace(/[\s\-_.]*(bab|chapter|ch|part|bagian)?[\s\-_.]*\d+.*$/i,'').trim()||'Novel gabungan';
+  const names=sorted.length>4?sorted.slice(0,3).map(f=>f.name).concat(['…',sorted[sorted.length-1].name]):sorted.map(f=>f.name);
+  openModal('<h3>'+files.length+' file dipilih</h3>'+
+    '<p style="margin:0 0 12px;line-height:1.45;font-size:.92rem">Ini satu novel yang babnya dipisah per file? Kalau ya, gabungkan agar jadi satu buku dengan daftar bab.</p>'+
+    '<label class="field"><span>Judul novel gabungan</span><input id="mT" value="'+esc(guess)+'"></label>'+
+    '<p style="color:var(--muted);font-size:.8rem;margin:0 0 14px;line-height:1.5">Urutan bab mengikuti nama file (Bab 2 sebelum Bab 10):<br>'+names.map(esc).join('<br>')+'</p>'+
+    '<div class="actions"><button class="btn" id="mSep">Buku terpisah</button><button class="btn primary" id="mMerge">Gabung jadi 1 novel</button></div>',
+  ()=>{
+    $('#mSep').onclick=async()=>{closeModal();await importSeparate(files);};
+    $('#mMerge').onclick=async()=>{
+      const title=$('#mT').value.trim()||guess;closeModal();
+      try{
+        const errs=await mergeFiles(files,title);renderLib();
+        if(errs.length)toast('Digabung. Gagal: '+errs.join('; '),6000);else toast('Novel "'+title+'" dibuat ✓');
+      }catch(e){toast(e.message||'Gagal menggabungkan',5000);}
+    };
+  });
+}
+async function importFiles(list){
+  const all=[...list];if(!all.length)return;
+  const js=all.filter(f=>extOf(f.name)==='json'),files=all.filter(f=>extOf(f.name)!=='json');
+  for(const f of js){
+    try{const r=await importBackup(f);renderLib();toast(r,5000);}
+    catch(e){toast(e.message||'Gagal membaca cadangan',5000);}
+  }
+  if(!files.length)return;
+  if(files.length>1){askMulti(files);return;}
+  await importSeparate(files);
+}
+
+/* ---------- Status, favorit, koleksi, tag ---------- */
+function bookStatus(b){
+  if(b.done||pct(b)>=98)return 'done';
+  if(b.lastRead||pct(b)>0)return 'reading';
+  return 'new';
+}
+const STATUS_LABEL={all:'Semua',fav:'★ Favorit',new:'Belum dibaca',reading:'Sedang dibaca',done:'Selesai'};
+const filt={status:'all',coll:'',tag:''};
+let selecting=false;const sel=new Set();
+const normT=t=>String(t).toLowerCase().normalize('NFKD').replace(/[^\p{L}\p{N}]+/gu,'');
+const parseTags=v=>[...new Set(String(v||'').split(/[,;\n]/).map(x=>x.trim()).filter(Boolean).map(x=>x.slice(0,30)))].slice(0,12);
+function findDup(title,words,size){
+  const nt=normT(title);
+  return books.find(b=>normT(b.title)===nt&&(b.size===size||Math.abs(b.words-words)/Math.max(1,Math.max(b.words,words))<=0.05));
+}
+let dupPolicy=null;
+function dupDecision(title,dup){
+  if(dupPolicy==='all')return Promise.resolve('add');
+  if(dupPolicy==='skip')return Promise.resolve('skip');
+  return new Promise(res=>{
+    openModal('<h3>Buku mirip sudah ada</h3>'+
+      '<p style="line-height:1.5;margin:0 0 12px">“'+esc(title)+'” tampaknya sama dengan “'+esc(dup.title)+'” yang sudah ada di perpustakaanmu.</p>'+
+      '<div class="actions"><button class="btn" id="dSkip">Lewati</button><button class="btn primary" id="dAdd">Tetap tambahkan</button></div>'+
+      '<div class="actions" style="margin-top:8px"><button class="btn" id="dSkipAll">Lewati semua duplikat</button><button class="btn" id="dAddAll">Tambahkan semua</button></div>',
+    ()=>{
+      $('#ov').dataset.lock='1';
+      const done=(r,p)=>{if(p)dupPolicy=p;closeModal();res(r);};
+      $('#dSkip').onclick=()=>done('skip');$('#dAdd').onclick=()=>done('add');
+      $('#dSkipAll').onclick=()=>done('skip','skip');$('#dAddAll').onclick=()=>done('add','all');
+    });
+  });
+}
+function allColls(){return [...new Set(books.map(b=>b.collection).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'id'));}
+function allTags(){return [...new Set(books.flatMap(b=>b.tags||[]))].sort((a,b)=>a.localeCompare(b,'id'));}
+function visibleBooks(){
+  const q=$('#q').value.trim().toLowerCase(),sort=$('#sort').value;
+  let list=books.filter(b=>!q||(b.title+' '+b.author+' '+(b.tags||[]).join(' ')+' '+(b.collection||'')).toLowerCase().includes(q));
+  if(filt.status==='fav')list=list.filter(b=>b.fav);
+  else if(filt.status!=='all')list=list.filter(b=>bookStatus(b)===filt.status);
+  if(filt.coll)list=list.filter(b=>b.collection===filt.coll);
+  if(filt.tag)list=list.filter(b=>(b.tags||[]).includes(filt.tag));
+  list.sort((a,b)=>sort==='title'?a.title.localeCompare(b.title,'id')
+    :sort==='added'?b.added-a.added:(b.lastRead||0)-(a.lastRead||0)||b.added-a.added);
+  return list;
+}
+function renderBulk(){
+  const bar=$('#bulkBar');
+  bar.hidden=!selecting;
+  document.body.classList.toggle('selecting',selecting);
+  $('#grid').classList.toggle('selecting',selecting);
+  $('#selMode').textContent=selecting?'✕ Selesai':'☑ Pilih';
+  if(!selecting)return;
+  bar.innerHTML='<span class="cnt">'+sel.size+' dipilih</span>'+
+    '<button class="btn" data-b="all">Semua</button><button class="btn" data-b="exp">⬇ Ekspor</button>'+
+    '<button class="btn" data-b="coll">📁 Koleksi</button><button class="btn" data-b="tag">🏷 Tag</button>'+
+    '<button class="btn" data-b="fav">★ Favorit</button><button class="btn" data-b="done">✓ Selesai</button>'+
+    '<button class="btn danger" data-b="del">🗑 Hapus</button>';
+}
+function bulkIds(){return [...sel].filter(id=>books.some(b=>b.id===id));}
+async function bulkAction(a){
+  const ids=bulkIds();
+  if(a==='all'){const v=visibleBooks();const allSel=v.every(b=>sel.has(b.id));v.forEach(b=>allSel?sel.delete(b.id):sel.add(b.id));renderLib();return;}
+  if(!ids.length){toast('Pilih buku dulu');return;}
+  const bs=ids.map(id=>books.find(b=>b.id===id));
+  if(a==='exp'){exportBooks(ids);return;}
+  if(a==='fav'){const all=bs.every(b=>b.fav);for(const b of bs){b.fav=!all;await dbPut('meta',b);}renderLib();toast(all?'Favorit dilepas':'Ditambahkan ke favorit ★');return;}
+  if(a==='done'){for(const b of bs){b.done=true;await dbPut('meta',b);}renderLib();toast(bs.length+' buku ditandai selesai ✓');return;}
+  if(a==='coll'){
+    openModal('<h3>Koleksi untuk '+ids.length+' buku</h3><label class="field"><span>Nama koleksi (kosongkan untuk melepas)</span><input id="bcI" list="bcL" placeholder="mis. Fiksi, Kuliah, Kajian"></label><datalist id="bcL">'+allColls().map(c=>'<option value="'+esc(c)+'">').join('')+'</datalist>'+
+      '<div class="actions"><button class="btn" id="bcX">Batal</button><button class="btn primary" id="bcOk">Terapkan</button></div>',
+    ()=>{$('#bcX').onclick=closeModal;$('#bcOk').onclick=async()=>{const v=$('#bcI').value.trim().slice(0,40);for(const b of bs){if(v)b.collection=v;else delete b.collection;await dbPut('meta',b);}closeModal();renderLib();toast('Koleksi diperbarui');};});
+    return;
+  }
+  if(a==='tag'){
+    openModal('<h3>Tag untuk '+ids.length+' buku</h3><label class="field"><span>Tag (pisahkan dengan koma)</span><input id="btI" placeholder="mis. klasik, romansa"></label>'+
+      '<div class="actions"><button class="btn" id="btX">Batal</button><button class="btn" id="btRm">Hapus tag ini</button><button class="btn primary" id="btAdd">Tambahkan</button></div>',
+    ()=>{
+      $('#btX').onclick=closeModal;
+      $('#btAdd').onclick=async()=>{const t=parseTags($('#btI').value);for(const b of bs){b.tags=[...new Set([...(b.tags||[]),...t])].slice(0,12);await dbPut('meta',b);}closeModal();renderLib();toast('Tag ditambahkan');};
+      $('#btRm').onclick=async()=>{const t=parseTags($('#btI').value);for(const b of bs){b.tags=(b.tags||[]).filter(x=>!t.includes(x));await dbPut('meta',b);}closeModal();renderLib();toast('Tag dihapus');};
+    });
+    return;
+  }
+  if(a==='del'){
+    openModal('<h3>Hapus '+ids.length+' buku?</h3><p style="line-height:1.5">Buku, penanda, sorotan, dan posisi baca akan hilang dari perangkat ini. Pertimbangkan ekspor cadangan dulu.</p>'+
+      '<div class="actions"><button class="btn" id="bdX">Batal</button><button class="btn danger" id="bdOk">Hapus</button></div>',
+    ()=>{
+      $('#bdX').onclick=closeModal;
+      let armed=false;
+      $('#bdOk').onclick=async function(){
+        if(!armed){armed=true;this.textContent='Yakin hapus?';return;}
+        for(const b of bs){await dbDel('meta',b.id);await dbDel('content',b.id);}
+        books=books.filter(x=>!ids.includes(x.id));sel.clear();selecting=false;
+        closeModal();renderLib();toast(ids.length+' buku dihapus');
+      };
+    });
+  }
+}
+/* ---------- UI Perpustakaan ---------- */
+let books=[];
+const pct=b=>b.chapters?Math.max(0,Math.min(100,Math.round(((b.ch||0)+(b.pos||0))/b.chapters*100))):0;
+
+function renderLib(){
+  const q=$('#q').value.trim().toLowerCase();
+  /* chip status + filter koleksi/tag */
+  const cnt={all:books.length,fav:books.filter(b=>b.fav).length,new:0,reading:0,done:0};
+  books.forEach(b=>cnt[bookStatus(b)]++);
+  $('#stChips').innerHTML=Object.keys(STATUS_LABEL).map(k=>'<button class="chip sm'+(filt.status===k?' on':'')+'" data-st="'+k+'">'+STATUS_LABEL[k]+' ('+cnt[k]+')</button>').join('');
+  const colls=allColls(),tags=allTags();
+  if(filt.coll&&!colls.includes(filt.coll))filt.coll='';
+  if(filt.tag&&!tags.includes(filt.tag))filt.tag='';
+  $('#fColl').innerHTML='<option value="">Semua koleksi</option>'+colls.map(c=>'<option value="'+esc(c)+'">📁 '+esc(c)+'</option>').join('');
+  $('#fTag').innerHTML='<option value="">Semua tag</option>'+tags.map(c=>'<option value="'+esc(c)+'">🏷 '+esc(c)+'</option>').join('');
+  $('#fColl').value=filt.coll;$('#fTag').value=filt.tag;
+  $('#fColl').hidden=!colls.length;$('#fTag').hidden=!tags.length;
+  const list=visibleBooks();
+  $('#grid').innerHTML=list.length?list.map(b=>{
+    const h=hue(b.title),p=pct(b),st=bookStatus(b);
+    return '<article class="card'+(sel.has(b.id)?' sel':'')+'" data-id="'+b.id+'">'+
+      '<button class="cover'+(b.cover?' hascover':'')+'" data-act="open" style="--h:'+h+(b.cover?';background-image:url('+b.cover+')':'')+'" aria-label="Buka '+esc(b.title)+'">'+
+      '<div class="ct">'+esc(b.title)+'</div>'+
+      (b.author?'<div class="ca">'+esc(b.author)+'</div>':'')+
+      (b.fav?'<span class="fav">★</span>':'')+'<span class="chk">'+(sel.has(b.id)?'✓':'')+'</span>'+
+      '<span class="ext">'+esc(b.ext)+'</span></button>'+
+      '<div class="meta"><div class="t">'+esc(b.title)+'</div>'+
+      '<div class="a">'+esc(b.collection?'📁 '+b.collection:(b.author||nf(b.words)+' kata'))+'</div>'+
+      '<div class="pbar"><i style="width:'+p+'%"></i></div>'+
+      '<div class="row"><span>'+(st==='done'?'Selesai ✓':p?p+'%':b.chapters+' bab')+'</span>'+
+      '<button data-act="menu" aria-label="Opsi">⋯</button></div></div></article>';
+  }).join(''):'<p class="muted" style="grid-column:1/-1;text-align:center;padding:30px 0">Tidak ada buku yang cocok dengan filter ini.</p>';
+  $('#empty').hidden=books.length>0;
+  $('#grid').hidden=books.length===0;
+  document.querySelectorAll('.tools,#stChips').forEach(x=>x.hidden=books.length===0);
+  $('#fColl').hidden=!colls.length;$('#fTag').hidden=!tags.length;
+  const tw=books.reduce((a,b)=>a+b.words,0);
+  const todayMin=Math.round((stats.days[dayKey()]||0)/60);
+  $('#stats').textContent=books.length?books.length+' buku · '+nf(tw)+' kata'+(todayMin?' · hari ini '+todayMin+' mnt':''):'';
+  const last=books.filter(b=>b.lastRead&&bookStatus(b)!=='done').sort((a,b)=>b.lastRead-a.lastRead)[0];
+  $('#resume').innerHTML=(last&&!q&&!selecting)?
+    '<button class="resume" data-act="resume" data-id="'+last.id+'"><div class="mini" style="--h:'+hue(last.title)+(last.cover?';background-image:url('+last.cover+');background-size:cover;background-position:center':'')+'"></div>'+
+    '<div><div class="rs">Lanjutkan membaca</div><div class="rt">'+esc(last.title)+'</div>'+
+    '<div class="rs">'+pct(last)+'% selesai</div></div><span class="go">Buka ›</span></button>':'';
+  renderBulk();
+}
+
+/* ---------- Modal ---------- */
+function closeModal(){$('#modalRoot').innerHTML='';}
+function openModal(html,onMount){
+  const root=$('#modalRoot');
+  root.innerHTML='<div class="overlay" id="ov"><div class="sheet">'+html+'</div></div>';
+  $('#ov').addEventListener('click',e=>{if(e.target.id==='ov'&&!e.target.dataset.lock)closeModal();});
+  onMount&&onMount(root);
+}
+function bookMenu(id){
+  const b=books.find(x=>x.id===id);if(!b)return;
+  const st=bookStatus(b);
+  openModal('<h3>Info buku</h3>'+
+    '<label class="field"><span>Judul</span><input id="eT" value="'+esc(b.title)+'"></label>'+
+    '<label class="field"><span>Penulis</span><input id="eA" value="'+esc(b.author)+'" placeholder="Opsional"></label>'+
+    '<label class="field"><span>Koleksi</span><input id="eC" list="eCL" value="'+esc(b.collection||'')+'" placeholder="mis. Fiksi, Kajian"></label><datalist id="eCL">'+allColls().map(c=>'<option value="'+esc(c)+'">').join('')+'</datalist>'+
+    '<label class="field"><span>Tag (pisahkan dengan koma)</span><input id="eG" value="'+esc((b.tags||[]).join(', '))+'" placeholder="mis. klasik, romansa"></label>'+
+    '<p style="color:var(--muted);font-size:.82rem;margin:0 0 12px;line-height:1.5">'+b.chapters+' bab · '+nf(b.words)+' kata · ± '+Math.max(1,Math.round(b.words/220/60*10)/10)+' jam baca · '+((b.bookmarks||[]).length)+' penanda · '+((b.highlights||[]).length)+' sorotan · dibaca '+dur(b.readSecs||0)+' · .'+esc(b.ext)+'<br>Status: <b>'+STATUS_LABEL[st]+'</b>'+(st==='done'?'':' · sisa ±'+remainTxt(b))+'</p>'+
+    '<div class="menurow"><button class="btn" id="eFav">'+(b.fav?'★ Lepas favorit':'☆ Favorit')+'</button><button class="btn" id="eDone">'+(st==='done'?'↺ Tandai belum selesai':'✓ Tandai selesai')+'</button></div>'+
+    '<div class="menurow"><button class="btn" id="eCov">🖼 '+(b.cover?'Ganti sampul':'Pasang sampul')+'</button>'+(b.cover?'<button class="btn" id="eCovDel">Hapus sampul</button>':'')+'<button class="btn" id="eMan">📑 Kelola bab</button><button class="btn" id="eExp">⬇ Ekspor…</button><button class="btn" id="eAdd">＋ Tambah bab dari file</button></div>'+
+    '<div class="actions"><button class="btn danger" id="eDel">Hapus</button><button class="btn" id="eX">Batal</button><button class="btn primary" id="eS">Simpan</button></div>',
+  ()=>{
+    $('#eX').onclick=closeModal;
+    const apply=()=>{
+      b.title=$('#eT').value.trim()||b.title;b.author=$('#eA').value.trim();
+      const c=$('#eC').value.trim().slice(0,40);if(c)b.collection=c;else delete b.collection;
+      const t=parseTags($('#eG').value);if(t.length)b.tags=t;else delete b.tags;
+    };
+    const keep=async()=>{apply();await dbPut('meta',b);renderLib();};
+    $('#eAdd').onclick=()=>{keep();appendTarget=b.id;closeModal();fileInput.click();};
+    $('#eCov').onclick=()=>{keep();coverTarget=b.id;closeModal();$('#coverFile').click();};
+    if($('#eCovDel'))$('#eCovDel').onclick=()=>{delete b.cover;keep();closeModal();toast('Sampul dihapus');};
+    $('#eMan').onclick=()=>{keep();closeModal();manageChapters(b.id);};
+    $('#eExp').onclick=()=>{keep();closeModal();exportMenu(b.id);};
+    $('#eFav').onclick=()=>{b.fav=!b.fav;keep();closeModal();toast(b.fav?'Ditambahkan ke favorit ★':'Favorit dilepas');};
+    $('#eDone').onclick=()=>{
+      if(st==='done'){delete b.done;if(pct(b)>=98){b.ch=0;b.pos=0;}}else b.done=true;
+      keep();closeModal();toast(st==='done'?'Ditandai belum selesai':'Ditandai selesai ✓');
+    };
+    $('#eS').onclick=async()=>{await keep();closeModal();};
+    let armed=false;
+    $('#eDel').onclick=async function(){
+      if(!armed){armed=true;this.textContent='Yakin hapus?';return;}
+      await dbDel('meta',b.id);await dbDel('content',b.id);
+      books=books.filter(x=>x.id!==b.id);closeModal();renderLib();toast('Buku dihapus');
+    };
+  });
+}
+
+/* ---------- Pembaca ---------- */
+let cur=null,saveT=null;
+async function openBook(id){
+  const meta=books.find(x=>x.id===id);if(!meta)return;
+  toast('Membuka…',0);
+  const c=await dbGet('content',id);
+  $('#toast').hidden=true;
+  if(!c){toast('Isi buku tidak ditemukan');return;}
+  cur={meta,chapters:c.chapters,ch:0};
+  $('#rTitle').textContent=meta.title;
+  $('#lib').hidden=true;$('#reader').hidden=false;
+  lastFrac=null;lastAct=Date.now();updateWakeLock();
+  showChapter(Math.min(meta.ch||0,c.chapters.length-1),meta.pos||0);
+}
+const AR='\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF';
+const AR_RUN=new RegExp('['+AR+']+(?:[\\s\\u200c\\u200d.,:;!?()«»"\'\\-–—،؛؟]*(?:['+AR+']+|[0-9]+))*','g');
+const AR_TEST=new RegExp('['+AR+']');
+const AR_G=new RegExp('['+AR+']','g'),LAT_G=/[A-Za-z\u00C0-\u024F]/g;
+const AR_FIRST=new RegExp('['+AR+']|[A-Za-z\\u00C0-\\u024F]');
+const toArDigits=t=>t.replace(/[0-9]/g,d=>String.fromCharCode(0x0660+(+d)));
+const BLK_RE=/<(p|h2|h3|li|blockquote)((?:\s[^>]*)?)>([\s\S]*?)<\/\1>/g;
+function wrapArabic(html){
+  if(!AR_TEST.test(html))return html;
+  ensureArabicFonts();
+  return html.replace(BLK_RE,(m,tag,attrs,inner)=>{
+    const plain=inner.replace(/<[^>]*>/g,'');
+    const ar=(plain.match(AR_G)||[]).length;
+    if(!ar)return m;
+    const lat=(plain.match(LAT_G)||[]).length;
+    const first=plain.match(AR_FIRST);
+    const rtl=(first&&AR_TEST.test(first[0]))||ar/(ar+lat)>=0.75;
+    let at=attrs||'';
+    if(rtl&&tag!=='h2'&&tag!=='h3')at=/class="/.test(at)?at.replace('class="','class="arp '):at+' class="arp"';
+    const wrapped=inner.replace(AR_RUN,m=>'<span class="ar" lang="ar" dir="rtl">'+(settings.arDigits==='latin'?m:toArDigits(m))+'</span>');
+    return '<'+tag+at+' dir="'+(rtl?'rtl':'auto')+'">'+wrapped+'</'+tag+'>';
+  });
+}
+let arLink=false;
+function ensureArabicFonts(){
+  if(arLink||settings.arFont==='trad')return;
+  arLink=true;
+  try{
+    const l=document.createElement('link');
+    l.rel='stylesheet';
+    l.href='https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Naskh+Arabic:wght@400;700&family=Scheherazade+New:wght@400;700&display=swap';
+    document.head.appendChild(l);
+  }catch(e){}
+}
+function showChapter(i,pos){
+  if(tts.on&&!tts.advancing)ttsStop(true);
+  i=Math.max(0,Math.min(cur.chapters.length-1,i));
+  cur.ch=i;cur.meta.ch=i;cur.meta.pos=pos||0;
+  $('#rText').innerHTML=wrapArabic(cur.chapters[i].html);
+  applyHighlights();
+  const body=$('#rBody');body.scrollTop=0;
+  applyMode();
+  if(isPaged())requestAnimationFrame(()=>layoutPaged(pos||0));
+  else requestAnimationFrame(()=>{body.scrollTop=(pos||0)*Math.max(0,body.scrollHeight-body.clientHeight);});
+  $('#rPrev').disabled=i===0;$('#rNext').disabled=i===cur.chapters.length-1;
+  updateProg();queueSave();
+}
+function updateProg(){
+  const n=cur.chapters.length;
+  $('#rProg').textContent='Bab '+(cur.ch+1)+'/'+n+(isPaged()&&pg.count>1?' · Hal '+(pg.page+1)+'/'+pg.count:'')+' · '+pct(cur.meta)+'%'+(remainTxt(cur.meta)?' · sisa ±'+remainTxt(cur.meta):'');
+  $('#rBm').classList.toggle('on',!!nearBm());
+}
+function nearBm(){
+  const tol=isPaged()?0.5/Math.max(1,pg.count-1):0.02;
+  return (cur.meta.bookmarks||[]).find(b=>b.ch===cur.ch&&Math.abs(b.pos-(cur.meta.pos||0))<tol);
+}
+function visibleExcerpt(){
+  if(isPaged()){
+    try{
+      const r=$('#clip').getBoundingClientRect(),x=r.left+30,y=r.top+40;
+      let node,off=0;
+      if(document.caretPositionFromPoint){const c=document.caretPositionFromPoint(x,y);if(c){node=c.offsetNode;off=c.offset;}}
+      else if(document.caretRangeFromPoint){const c=document.caretRangeFromPoint(x,y);if(c){node=c.startContainer;off=c.startOffset;}}
+      if(node&&node.nodeType===3){
+        const t=node.nodeValue.slice(off).replace(/\s+/g,' ').trim();
+        if(t.length>8)return t.slice(0,90);
+      }
+    }catch(e){}
+    for(const el of $('#rText').children){
+      if(el.getBoundingClientRect().right>$('#clip').getBoundingClientRect().left+10){
+        const t=(el.textContent||'').trim().replace(/\s+/g,' ');
+        if(t)return t.slice(0,90);
+      }
+    }
+    return '';
+  }
+  const top=$('#rBody').getBoundingClientRect().top+8;
+  for(const el of $('#rText').children){
+    if(el.getBoundingClientRect().bottom>top){
+      const t=(el.textContent||'').trim().replace(/\s+/g,' ');
+      if(t)return t.slice(0,90);
+    }
+  }
+  return '';
+}
+function toggleBookmark(){
+  if(!cur)return;
+  const list=cur.meta.bookmarks=cur.meta.bookmarks||[];
+  const ex=nearBm();
+  if(ex){cur.meta.bookmarks=list.filter(b=>b!==ex);toast('Penanda dihapus');}
+  else{list.push({id:uid(),ch:cur.ch,pos:cur.meta.pos||0,label:visibleExcerpt(),t:Date.now()});toast('Penanda ditambahkan 🔖');}
+  updateProg();saveNow();
+}
+function queueSave(){
+  clearTimeout(saveT);
+  saveT=setTimeout(saveNow,500);
+}
+async function saveNow(){
+  clearTimeout(saveT);
+  if(!cur)return;
+  cur.meta.lastRead=Date.now();
+  try{await dbPut('meta',cur.meta);}catch(e){}
+}
+function closeReader(){
+  ttsStop(true);saveNow();cur=null;updateWakeLock();$('#selBar').hidden=true;
+  $('#reader').hidden=true;$('#lib').hidden=false;
+  closeModal();renderLib();
+}
+$('#rBody').addEventListener('scroll',()=>{
+  if(!cur||isPaged())return;
+  const b=$('#rBody'),max=b.scrollHeight-b.clientHeight;
+  cur.meta.pos=max>0?Math.min(1,b.scrollTop/max):0;
+  updateProg();queueSave();
+},{passive:true});
+$('#rBack').onclick=closeReader;
+$('#rPrev').onclick=()=>showChapter(cur.ch-1,0);
+$('#rNext').onclick=()=>showChapter(cur.ch+1,0);
+$('#rBm').onclick=toggleBookmark;
+$('#rToc').onclick=()=>{
+  openModal('<div class="tabs"><button class="chip on" data-t="ch">Bab</button><button class="chip" data-t="bm">Penanda ('+(cur.meta.bookmarks||[]).length+')</button><button class="chip" data-t="hl">Sorotan ('+(cur.meta.highlights||[]).length+')</button></div><div id="tocBody" class="toc"></div>',
+  root=>{
+    const body=$('#tocBody');
+    const draw=tab=>{
+      root.querySelectorAll('.tabs .chip').forEach(x=>x.classList.toggle('on',x.dataset.t===tab));
+      if(tab==='ch'){
+        body.className='toc';
+        body.innerHTML=cur.chapters.map((c,i)=>'<button data-i="'+i+'" class="'+(i===cur.ch?'cur':'')+'"><small>'+(i+1)+'</small>'+esc(c.title)+'</button>').join('');
+        const c=body.querySelector('.cur');if(c)c.scrollIntoView({block:'center'});
+      }else if(tab==='bm'){
+        body.className='';
+        const bms=(cur.meta.bookmarks||[]).slice().sort((a,b)=>a.ch-b.ch||a.pos-b.pos);
+        body.innerHTML=bms.length?bms.map(b=>'<div class="bmrow"><button class="bmgo" data-ch="'+b.ch+'" data-pos="'+b.pos+'"><small>'+esc((cur.chapters[b.ch]||{}).title||'')+' · '+Math.round(b.pos*100)+'%</small>'+esc(b.label||'(tanpa cuplikan)')+'</button><button class="bmdel" data-id="'+b.id+'" aria-label="Hapus penanda">✕</button></div>').join('')
+          :'<p class="muted">Belum ada penanda. Ketuk 🔖 di bilah atas untuk menandai posisi baca; ketuk lagi di tempat yang sama untuk menghapusnya.</p>';
+      }else{
+        body.className='';
+        const hs=(cur.meta.highlights||[]).slice().sort((a,b)=>a.ch-b.ch||a.s-b.s);
+        body.innerHTML=hs.length?hs.map(h=>'<div class="bmrow"><button class="bmgo" data-hl="'+h.id+'"><small>'+esc((cur.chapters[h.ch]||{}).title||'')+'</small><span style="border-left:4px solid '+HL_COLORS[h.c]+';padding-left:6px">'+esc(h.text.slice(0,120))+'</span>'+(h.note?'<small style="margin-top:4px">📝 '+esc(h.note.slice(0,120))+'</small>':'')+'</button><button class="hldel" data-hdel="'+h.id+'" aria-label="Hapus sorotan">✕</button></div>').join('')
+          :'<p class="muted">Belum ada sorotan. Tahan dan geser pada teks untuk memilih, lalu pilih warna atau 📝 untuk catatan.</p>';
+      }
+    };
+    root.querySelectorAll('.tabs .chip').forEach(x=>x.onclick=()=>draw(x.dataset.t));
+    body.addEventListener('click',e=>{
+      const hg=e.target.closest('[data-hl]'),hd=e.target.closest('.hldel');
+      if(hd){
+        cur.meta.highlights=(cur.meta.highlights||[]).filter(x=>x.id!==hd.dataset.hdel);
+        applyHighlights();saveNow();draw('hl');
+        root.querySelector('.tabs .chip[data-t="hl"]').textContent='Sorotan ('+cur.meta.highlights.length+')';return;
+      }
+      if(hg){const h=(cur.meta.highlights||[]).find(x=>x.id===hg.dataset.hl);closeModal();if(h)gotoHighlight(h);return;}
+      const go=e.target.closest('[data-i],[data-ch]'),del=e.target.closest('.bmdel');
+      if(del){
+        cur.meta.bookmarks=(cur.meta.bookmarks||[]).filter(b=>b.id!==del.dataset.id);
+        updateProg();saveNow();draw('bm');
+        root.querySelector('.tabs .chip[data-t="bm"]').textContent='Penanda ('+cur.meta.bookmarks.length+')';
+      }else if(go&&go.dataset.i!==undefined){closeModal();showChapter(+go.dataset.i,0);}
+      else if(go){closeModal();showChapter(+go.dataset.ch,parseFloat(go.dataset.pos));}
+    });
+    draw('ch');
+  });
+};
+$('#rSet').onclick=()=>{
+  const chip=(group,val,label)=>'<button class="chip'+(String(settings[group])===String(val)?' on':'')+'" data-g="'+group+'" data-v="'+val+'">'+label+'</button>';
+  openModal('<h3>Tampilan</h3>'+
+    '<div class="setrow"><label>Tema</label><div class="chips">'+
+      chip('theme','auto','Otomatis')+chip('theme','light','Terang')+chip('theme','sepia','Sepia')+chip('theme','dark','Gelap')+'</div></div>'+
+    '<div class="setrow"><label>Mode baca</label><div class="chips">'+chip('mode','scroll','Gulir ↕')+chip('mode','page','Halaman ↔')+'</div></div>'+
+    '<div class="setrow"><label>Ukuran huruf</label><div class="chips">'+
+      '<button class="chip" id="fMin">A−</button><button class="chip" disabled id="fVal">'+settings.size+'px</button><button class="chip" id="fPlus">A+</button></div></div>'+
+    '<div class="setrow"><label>Jenis huruf</label><div class="chips">'+chip('font','serif','Serif')+chip('font','sans','Sans')+'</div></div>'+
+    '<div class="setrow"><label>Margin halaman</label><div class="chips">'+chip('margin','narrow','Sempit')+chip('margin','normal','Normal')+chip('margin','wide','Lebar')+'</div></div>'+
+    '<div class="setrow"><label>Teks rata kiri-kanan</label><div class="chips">'+chip('justify','off','Mati')+chip('justify','on','Nyala')+'</div></div>'+
+    '<div class="setrow"><label>Layar tetap menyala saat membaca</label><div class="chips">'+chip('keepAwake','on','Nyala')+chip('keepAwake','off','Mati')+'</div></div>'+
+    '<div class="setrow"><label>Font tulisan Arab</label><div class="chips">'+chip('arFont','auto','Otomatis')+chip('arFont','trad','Traditional Arabic')+chip('arFont','amiri','Amiri')+chip('arFont','naskh','Naskh')+chip('arFont','sch','Scheherazade')+'</div></div>'+
+    '<div class="setrow"><label>Ukuran tulisan Arab</label><div class="chips">'+chip('arScale',1,'100%')+chip('arScale',1.15,'115%')+chip('arScale',1.3,'130%')+chip('arScale',1.5,'150%')+chip('arScale',1.75,'175%')+chip('arScale',2,'200%')+chip('arScale',2.5,'250%')+'</div></div>'+
+    '<div class="setrow"><label>Angka di dalam tulisan Arab</label><div class="chips">'+chip('arDigits','arab','Angka Arab ٣٤')+chip('arDigits','latin','Angka Latin 34')+'</div></div>'+
+    '<div class="setrow"><label>Jarak baris tulisan Arab</label><div class="chips">'+chip('arLh','auto','Otomatis')+chip('arLh',2,'Lega')+chip('arLh',2.4,'Sangat lega')+chip('arLh',2.8,'Ekstra lega')+'</div></div>'+
+    '<div class="setrow"><label>Jarak baris</label><div class="chips">'+chip('lh',1.5,'Rapat')+chip('lh',1.7,'Normal')+chip('lh',1.95,'Lega')+'</div></div>'+
+    '<div class="actions"><button class="btn primary" id="sOk">Selesai</button></div>',
+  root=>{
+    root.querySelectorAll('.chip[data-g]').forEach(btn=>btn.onclick=()=>{
+      const g=btn.dataset.g;settings[g]=(g==='lh'||g==='arScale'||(g==='arLh'&&btn.dataset.v!=='auto'))?parseFloat(btn.dataset.v):btn.dataset.v;
+      saveSettings();applySettings();relayout();updateWakeLock();
+      if(g==='arDigits'&&cur)showChapter(cur.ch,cur.meta.pos||0);
+      if(g==='mode'&&settings.mode==='page')toast('Geser kiri/kanan atau ketuk tepi layar untuk membalik halaman',3500);
+      root.querySelectorAll('.chip[data-g="'+g+'"]').forEach(x=>x.classList.toggle('on',x===btn));
+    });
+    const step=d=>{settings.size=Math.max(14,Math.min(34,settings.size+d));$('#fVal').textContent=settings.size+'px';saveSettings();applySettings();relayout();updateWakeLock();};
+    $('#fMin').onclick=()=>step(-1);$('#fPlus').onclick=()=>step(1);
+    $('#sOk').onclick=closeModal;
+  });
+};
+document.addEventListener('visibilitychange',()=>{if(document.hidden)saveNow();});
+window.addEventListener('pagehide',saveNow);
+
+/* ---------- Sampul ---------- */
+let coverTarget=null;
+function makeCover(file){
+  return new Promise((resolve,reject)=>{
+    const fr=new FileReader();
+    fr.onerror=()=>reject(new Error('Gagal membaca gambar'));
+    fr.onload=()=>{
+      const img=new Image();
+      img.onerror=()=>reject(new Error('File bukan gambar yang valid'));
+      img.onload=()=>{
+        const Wd=400,Ht=600,c=document.createElement('canvas');c.width=Wd;c.height=Ht;
+        const g=c.getContext('2d'),sc=Math.max(Wd/img.width,Ht/img.height),w=img.width*sc,h=img.height*sc;
+        g.fillStyle='#000';g.fillRect(0,0,Wd,Ht);
+        g.drawImage(img,(Wd-w)/2,(Ht-h)/2,w,h);
+        resolve(c.toDataURL('image/jpeg',0.82));
+      };
+      img.src=fr.result;
+    };
+    fr.readAsDataURL(file);
+  });
+}
+$('#coverFile').onchange=async()=>{
+  const f=$('#coverFile').files[0];$('#coverFile').value='';
+  const id=coverTarget;coverTarget=null;
+  const b=books.find(x=>x.id===id);if(!f||!b)return;
+  try{b.cover=await makeCover(f);await dbPut('meta',b);renderLib();toast('Sampul dipasang ✓');}
+  catch(e){toast(e.message||'Gagal memasang sampul',4000);}
+};
+
+/* ---------- Kelola bab ---------- */
+let mgr=null;
+const plain=h=>h.replace(/<[^>]*>/g,' ');
+async function persistChapters(){
+  const {meta,c}=mgr;
+  meta.chapters=c.chapters.length;
+  meta.words=c.chapters.reduce((a,x)=>a+words(plain(x.html)),0);
+  meta.ch=Math.max(0,Math.min(meta.ch||0,c.chapters.length-1));
+  await dbPut('content',c);await dbPut('meta',meta);renderLib();
+}
+function drawChapters(){
+  const chs=mgr.c.chapters,n=chs.length;
+  $('#chList').innerHTML=chs.map((ch,i)=>
+    '<div class="crow" data-i="'+i+'"><div class="top2"><span class="n">'+(i+1)+'</span>'+
+    '<input value="'+esc(ch.title)+'" aria-label="Judul bab '+(i+1)+'"></div>'+
+    '<div class="tb"><button data-a="up"'+(i===0?' disabled':'')+'>↑</button>'+
+    '<button data-a="down"'+(i===n-1?' disabled':'')+'>↓</button>'+
+    '<button data-a="rep">⟳ Ganti isi</button>'+
+    '<button data-a="del"'+(n===1?' disabled':'')+'>🗑 Hapus</button></div></div>').join('');
+}
+async function onChapClick(e){
+  const btn=e.target.closest('button[data-a]');if(!btn||!mgr)return;
+  const i=+btn.closest('.crow').dataset.i,{meta,c}=mgr,chs=c.chapters,a=btn.dataset.a;
+  if(a==='rep'){mgr.rep=i;$('#chapFile').click();return;}
+  if(a==='up'||a==='down'){
+    const j=a==='up'?i-1:i+1;if(j<0||j>=chs.length)return;
+    [chs[i],chs[j]]=[chs[j],chs[i]];
+    if(meta.ch===i)meta.ch=j;else if(meta.ch===j)meta.ch=i;
+    (meta.bookmarks||[]).forEach(b=>{if(b.ch===i)b.ch=j;else if(b.ch===j)b.ch=i;});
+  }else if(a==='del'){
+    if(btn.dataset.armed!=='1'){btn.dataset.armed='1';btn.textContent='Yakin hapus?';return;}
+    chs.splice(i,1);
+    if(meta.ch>i)meta.ch--;else if(meta.ch===i){meta.pos=0;meta.ch=Math.min(i,chs.length-1);}
+    meta.bookmarks=(meta.bookmarks||[]).filter(b=>b.ch!==i);
+    meta.bookmarks.forEach(b=>{if(b.ch>i)b.ch--;});
+  }
+  await persistChapters();drawChapters();
+}
+async function onChapRename(e){
+  const inp=e.target;if(!mgr||inp.tagName!=='INPUT')return;
+  const i=+inp.closest('.crow').dataset.i,ch=mgr.c.chapters[i];
+  ch.title=inp.value.trim()||ch.title;inp.value=ch.title;
+  ch.html=ch.html.replace(/^<h2>.*?<\/h2>/,'<h2>'+esc(ch.title)+'</h2>');
+  await persistChapters();
+}
+async function manageChapters(id){
+  const meta=books.find(x=>x.id===id);if(!meta)return;
+  const c=await dbGet('content',id);
+  if(!c){toast('Isi buku tidak ditemukan');return;}
+  mgr={meta,c,rep:null};
+  openModal('<h3>Kelola bab · '+esc(meta.title)+'</h3>'+
+    '<p style="margin:0 0 6px;color:var(--muted);font-size:.85rem;line-height:1.45">Ketuk judul untuk mengubah nama, atur urutan dengan ↑ ↓, atau ganti isi bab dari file yang sudah direvisi.</p>'+
+    '<div id="chList"></div><div class="actions" style="margin-top:14px"><button class="btn primary" id="chOk">Selesai</button></div>',
+  ()=>{
+    drawChapters();
+    $('#chList').addEventListener('click',onChapClick);
+    $('#chList').addEventListener('change',onChapRename);
+    $('#chOk').onclick=()=>{mgr=null;closeModal();renderLib();};
+  });
+}
+$('#chapFile').onchange=async()=>{
+  const f=$('#chapFile').files[0];$('#chapFile').value='';
+  if(!f||!mgr||mgr.rep==null)return;
+  const i=mgr.rep;mgr.rep=null;
+  try{
+    toast('Memproses…',0);
+    const res=await parseFile(f);
+    const chs=mgr.c.chapters,old=chs[i];
+    const nw=chaptersOf(res,old.title);
+    if(nw.length===1&&(!res.blocks||res.blocks[0].k!=='h'))nw[0].title=old.title;
+    chs.splice(i,1,...nw);
+    if(mgr.meta.ch===i)mgr.meta.pos=0;
+    else if(mgr.meta.ch>i)mgr.meta.ch+=nw.length-1;
+    (mgr.meta.bookmarks||[]).forEach(b=>{if(b.ch>i)b.ch+=nw.length-1;});
+    await persistChapters();
+    if($('#chList'))drawChapters();
+    toast('Bab '+(i+1)+' diperbarui ✓');
+  }catch(e){toast(e.message||'Gagal memperbarui bab',5000);}
+};
+
+/* ---------- Cadangan: ekspor / impor ---------- */
+const fmtBytes=n=>n>=1073741824?(n/1073741824).toFixed(1)+' GB':n>=1048576?(n/1048576).toFixed(1)+' MB':Math.max(1,Math.round(n/1024))+' KB';
+let dlCap;
+async function getDownloads(){
+  if(dlCap!==undefined)return dlCap;
+  try{dlCap=(window.claude&&claude.use)?await claude.use('downloads'):null;}catch(e){dlCap=null;}
+  return dlCap;
+}
+/* Simpan file: pakai izin unduhan claude.ai bila ada; jika dibuka sebagai file HTML biasa, pakai unduhan browser */
+async function saveBlob(name,blob){
+  const dl=await getDownloads();
+  if(dl){await dl.save({filename:name,data:blob});return;}
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=name;a.style.display='none';
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),60000);
+}
+async function exportBooks(ids){
+  if(!ids.length){toast('Belum ada buku untuk diekspor');return;}
+  toast('Menyiapkan cadangan…',0);
+  try{
+    const items=[];
+    for(const id of ids){
+      const meta=books.find(x=>x.id===id),content=await dbGet('content',id);
+      if(meta&&content)items.push({meta,content});
+    }
+    const payload={app:'perpustakaan-novel-offline',version:1,exported:new Date().toISOString(),books:items};
+    const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
+    const day=new Date().toISOString().slice(0,10);
+    const name=(ids.length===1?items[0].meta.title.replace(/[\\/:*?"<>|\s]+/g,' ').trim().slice(0,60)||'buku':'perpustakaan-novel-'+day)+'.json';
+    await saveBlob(name,blob);
+    toast('Cadangan siap ✓');
+  }catch(e){
+    if(e&&e.code==='declined')toast('Dibatalkan');
+    else toast('Gagal menyimpan: '+((e&&(e.message||e.code))||'kesalahan'),5000);
+  }
+}
+const cleanStr=(v,max)=>typeof v==='string'?v.slice(0,max):'';
+const cleanNum=(v,d)=>typeof v==='number'&&isFinite(v)?v:d;
+async function importBackup(file){
+  let data;
+  try{data=JSON.parse(await file.text());}catch(e){throw new Error('File JSON tidak valid');}
+  if(!data||data.app!=='perpustakaan-novel-offline'||!Array.isArray(data.books))throw new Error('Bukan file cadangan perpustakaan ini');
+  let added=0,skipped=0,bad=0;
+  for(const it of data.books){
+    const m=it&&it.meta,c=it&&it.content;
+    if(!m||typeof m.id!=='string'||!c||!Array.isArray(c.chapters)||!c.chapters.length){bad++;continue;}
+    if(books.some(b=>b.id===m.id)){skipped++;continue;}
+    const chapters=c.chapters.map((ch,i)=>({title:cleanStr(ch&&ch.title,120)||('Bagian '+(i+1)),html:sanitizeHtml(cleanStr(ch&&ch.html,25000000))}));
+    const meta={
+      id:m.id.slice(0,64).replace(/[^\w\-]/g,'')||uid(),
+      title:cleanStr(m.title,200)||'Tanpa judul',author:cleanStr(m.author,200),
+      ext:cleanStr(m.ext,10)||'txt',size:cleanNum(m.size,0),
+      words:cleanNum(m.words,0),chapters:chapters.length,
+      added:cleanNum(m.added,Date.now()),lastRead:cleanNum(m.lastRead,0),
+      ch:Math.max(0,Math.min(chapters.length-1,Math.floor(cleanNum(m.ch,0)))),
+      pos:Math.max(0,Math.min(1,cleanNum(m.pos,0))),
+      bookmarks:(Array.isArray(m.bookmarks)?m.bookmarks:[]).filter(b=>b&&typeof b==='object').slice(0,500).map(b=>({
+        id:cleanStr(b.id,40).replace(/[^\w\-]/g,'')||uid(),
+        ch:Math.max(0,Math.min(chapters.length-1,Math.floor(cleanNum(b.ch,0)))),
+        pos:Math.max(0,Math.min(1,cleanNum(b.pos,0))),
+        label:cleanStr(b.label,120),t:cleanNum(b.t,Date.now())})),
+      highlights:(Array.isArray(m.highlights)?m.highlights:[]).filter(h=>h&&typeof h==='object').slice(0,2000).map(h=>({
+        id:cleanStr(h.id,40).replace(/[^\w\-]/g,'')||uid(),
+        ch:Math.max(0,Math.min(chapters.length-1,Math.floor(cleanNum(h.ch,0)))),
+        s:Math.max(0,Math.floor(cleanNum(h.s,0))),e:Math.max(0,Math.floor(cleanNum(h.e,0))),
+        text:cleanStr(h.text,300),c:[1,2,3,4].includes(h.c)?h.c:1,note:cleanStr(h.note,2000),t:cleanNum(h.t,Date.now())})).filter(h=>h.e>h.s),
+      readSecs:Math.max(0,cleanNum(m.readSecs,0))
+    };
+    if(m.fav===true)meta.fav=true;
+    if(m.done===true)meta.done=true;
+    if(typeof m.collection==='string'&&m.collection.trim())meta.collection=m.collection.trim().slice(0,40);
+    if(Array.isArray(m.tags))meta.tags=parseTags(m.tags.filter(x=>typeof x==='string').join(','));
+    if(typeof m.cover==='string'&&/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/.test(m.cover)&&m.cover.length<2000000)meta.cover=m.cover;
+    await dbPut('content',{id:meta.id,chapters});
+    await dbPut('meta',meta);
+    books.push(meta);added++;
+    await tick();
+  }
+  return added+' buku dipulihkan'+(skipped?' · '+skipped+' sudah ada (dilewati)':'')+(bad?' · '+bad+' rusak (dilewati)':'');
+}
+$('#setBtn').onclick=async()=>{
+  let usage='';
+  try{
+    if(navigator.storage&&navigator.storage.estimate){
+      const e=await navigator.storage.estimate();
+      usage=' · terpakai ± '+fmtBytes(e.usage||0)+(e.quota?' dari '+fmtBytes(e.quota):'');
+    }
+  }catch(e){}
+  openModal('<h3>Data &amp; cadangan</h3>'+
+    '<p class="muted" style="margin:0 0 12px">'+books.length+' buku'+usage+'</p>'+
+    '<div class="menurow"><button class="btn" id="bkAll">⬇ Ekspor semua (.json)</button><button class="btn" id="bkImp">⬆ Impor cadangan</button><button class="btn" id="stBtn">📊 Statistik baca</button></div>'+
+    '<p class="muted">Cadangan berisi isi buku, sampul, penanda, dan posisi baca. Untuk memindahkan perpustakaan ke perangkat lain, ekspor di sini lalu impor di sana. Buku dengan ID yang sama dilewati agar tidak menimpa.</p>'+
+    '<label class="field" style="margin-top:14px"><span>Encoding teks saat impor (TXT, MD, CHM)</span><select id="encSel" style="width:100%;border:1px solid var(--border);background:var(--bg);border-radius:10px;padding:10px 12px"><option value="auto">Otomatis (disarankan)</option><option value="utf-8">UTF-8</option><option value="windows-1256">Arab (Windows-1256)</option><option value="iso-8859-6">Arab (ISO-8859-6)</option><option value="gbk">Mandarin (GBK)</option><option value="big5">Mandarin (Big5)</option><option value="windows-1252">Latin Barat (Windows-1252)</option><option value="windows-1251">Sirilik (Windows-1251)</option><option value="shift_jis">Jepang (Shift_JIS)</option><option value="euc-kr">Korea (EUC-KR)</option><option value="windows-1255">Ibrani (Windows-1255)</option><option value="windows-1254">Turki (Windows-1254)</option></select></label>'+
+    '<p class="muted">Biarkan Otomatis. Ubah hanya jika huruf berantakan setelah impor, lalu impor ulang filenya.</p>'+
+    '<label class="field"><span>Sertakan gambar saat impor (EPUB, DOCX, PDF, CHM, MOBI, FB2)</span><select id="imgSel" style="width:100%;border:1px solid var(--border);background:var(--bg);border-radius:10px;padding:10px 12px"><option value="on">Ya (file lebih besar)</option><option value="off">Tidak (hanya teks)</option></select></label>'+
+    '<div class="actions"><button class="btn primary" id="bkOk">Tutup</button></div>',
+  ()=>{
+    $('#bkOk').onclick=closeModal;
+    $('#stBtn').onclick=()=>{closeModal();showStats();};
+    $('#imgSel').value=settings.importImages||'on';
+    $('#imgSel').onchange=()=>{settings.importImages=$('#imgSel').value;saveSettings();toast(settings.importImages==='on'?'Gambar akan disertakan saat impor':'Impor hanya teks');};
+    $('#encSel').value=settings.enc||'auto';
+    $('#encSel').onchange=()=>{settings.enc=$('#encSel').value;saveSettings();toast('Encoding diubah — impor ulang filenya');};
+    $('#bkAll').onclick=()=>{closeModal();exportBooks(books.map(b=>b.id));};
+    $('#bkImp').onclick=()=>{appendTarget=null;closeModal();fileInput.click();};
+  });
+};
+
+/* ---------- Mode halaman (geser kiri/kanan) ---------- */
+const pg={w:0,page:0,count:1};
+const isPaged=()=>settings.mode==='page';
+function applyMode(){
+  const body=$('#rBody'),art=$('#rText'),clip=$('#clip');
+  const on=isPaged();
+  body.classList.toggle('paged',on);
+  if(!on){art.style.cssText='';clip.style.cssText='';}
+}
+function layoutPaged(pos){
+  if(!isPaged())return;
+  const body=$('#rBody'),art=$('#rText'),clip=$('#clip');
+  body.scrollTop=0;
+  const px=settings.margin==='narrow'?12:settings.margin==='wide'?36:Math.max(14,Math.min(28,Math.round(body.clientWidth*0.05)));
+  const W=Math.max(200,Math.floor(Math.min(body.clientWidth,760)));
+  clip.style.width=W+'px';clip.style.marginLeft=(-W/2)+'px';
+  art.style.width=W+'px';
+  art.style.setProperty('--px',px+'px');
+  art.style.columnWidth=(W-2*px)+'px';
+  art.style.transition='none';art.style.transform='translateX(0)';
+  pg.w=W;
+  pg.count=Math.max(1,Math.ceil((art.scrollWidth-2)/W));
+  pg.page=Math.max(0,Math.min(pg.count-1,Math.round((pos||0)*(pg.count-1))));
+  applyPage(false);
+}
+function applyPage(animate){
+  const art=$('#rText');
+  art.style.transition=animate?'transform .22s ease':'none';
+  art.style.transform='translateX('+(-pg.page*pg.w)+'px)';
+  if(cur){cur.meta.pos=pg.count>1?pg.page/(pg.count-1):0;updateProg();queueSave();}
+}
+function pageStep(d){
+  if(!cur||!isPaged())return;
+  const np=pg.page+d;
+  if(np>=pg.count){if(cur.ch<cur.chapters.length-1)showChapter(cur.ch+1,0);else toast('Akhir buku');return;}
+  if(np<0){if(cur.ch>0)showChapter(cur.ch-1,1);return;}
+  pg.page=np;applyPage(true);
+}
+function relayout(){
+  if(!cur||$('#reader').hidden)return;
+  const pos=cur.meta.pos||0;
+  applyMode();
+  requestAnimationFrame(()=>{
+    if(isPaged())layoutPaged(pos);
+    else{const b=$('#rBody');b.scrollTop=pos*Math.max(0,b.scrollHeight-b.clientHeight);updateProg();}
+  });
+}
+let pt=null,rzT=null;
+$('#rBody').addEventListener('pointerdown',e=>{if(isPaged())pt={x:e.clientX,y:e.clientY};});
+$('#rBody').addEventListener('pointercancel',()=>{pt=null;});
+$('#rBody').addEventListener('pointerup',e=>{
+  if(!isPaged()||!pt||!cur)return;
+  const dx=e.clientX-pt.x,dy=e.clientY-pt.y;pt=null;
+  if(window.getSelection&&String(window.getSelection()))return;
+  if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy)*1.3){pageStep(dx<0?1:-1);return;}
+  if(Math.abs(dx)<10&&Math.abs(dy)<10){
+    if(window.getSelection&&String(window.getSelection()))return;
+    const r=$('#rBody').getBoundingClientRect(),f=(e.clientX-r.left)/r.width;
+    if(f<0.3)pageStep(-1);else if(f>0.7)pageStep(1);
+  }
+});
+document.addEventListener('keydown',e=>{
+  if(!cur||$('#reader').hidden||!isPaged()||$('#modalRoot').firstChild)return;
+  const t=e.target&&e.target.tagName;if(t==='INPUT'||t==='SELECT'||t==='TEXTAREA')return;
+  if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){e.preventDefault();pageStep(1);}
+  else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();pageStep(-1);}
+});
+window.addEventListener('resize',()=>{clearTimeout(rzT);rzT=setTimeout(relayout,200);});
+
+/* ---------- Layar tetap menyala ---------- */
+let wl=null,noWake=false;
+async function updateWakeLock(){
+  try{
+    const want=!!cur&&!$('#reader').hidden&&settings.keepAwake!=='off'&&!document.hidden&&!noWake&&!!navigator.wakeLock;
+    if(want&&!wl){
+      wl=await navigator.wakeLock.request('screen');
+      wl.addEventListener('release',()=>{wl=null;});
+    }else if(!want&&wl){await wl.release();wl=null;}
+  }catch(e){wl=null;}
+}
+document.addEventListener('visibilitychange',updateWakeLock);
+
+/* ---------- Statistik baca ---------- */
+const stats={days:{},goal:20,rsec:0,words:0};
+try{const s=localStorage.getItem('perpus-stats');if(s)Object.assign(stats,JSON.parse(s));}catch(e){}
+function saveStats(){try{localStorage.setItem('perpus-stats',JSON.stringify(stats));}catch(e){}}
+const dayKey=t=>{const d=new Date(t===undefined?Date.now():t);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};
+const fmtMin=m=>{m=Math.max(1,Math.round(m));return m<60?m+' mnt':Math.floor(m/60)+' j'+(m%60?' '+(m%60)+' mnt':'');};
+function wpm(){return stats.rsec>=120&&stats.words>50?Math.max(80,Math.min(600,stats.words/stats.rsec*60)):200;}
+function remainTxt(meta){
+  if(!meta.words)return '';
+  const f=Math.min(1,((meta.ch||0)+(meta.pos||0))/Math.max(1,meta.chapters));
+  return fmtMin(meta.words*(1-f)/wpm());
+}
+let lastAct=0,lastFrac=null,goalDay='',tickN=0;
+function bump(){
+  lastAct=Date.now();
+  if(noWake){noWake=false;updateWakeLock();}
+}
+['pointerdown','keydown','wheel','touchmove'].forEach(ev=>document.addEventListener(ev,bump,{passive:true}));
+$('#rBody').addEventListener('scroll',()=>{lastAct=Date.now();},{passive:true});
+setInterval(()=>{
+  if(!cur||$('#reader').hidden||document.hidden)return;
+  const now=Date.now(),speaking=tts.on;
+  if(!(now-lastAct<120000||speaking))return;
+  const add=5,k=dayKey();
+  stats.days[k]=(stats.days[k]||0)+add;
+  cur.meta.readSecs=(cur.meta.readSecs||0)+add;
+  const frac=(cur.ch+(cur.meta.pos||0))/cur.chapters.length;
+  if(!speaking){
+    stats.rsec+=add;
+    if(lastFrac!==null){const d=frac-lastFrac;if(d>0&&d<0.02)stats.words+=d*cur.meta.words;}
+  }
+  lastFrac=frac;
+  saveStats();
+  if(++tickN%6===0)queueSave();
+  if(stats.goal&&stats.days[k]>=stats.goal*60&&goalDay!==k&&stats.days[k]-add<stats.goal*60){
+    goalDay=k;toast('🎯 Target baca hari ini tercapai!',4000);
+  }
+},5000);
+const dur=sec=>{const m=Math.round(sec/60);return m<60?m+' mnt':Math.floor(m/60)+' j'+(m%60?' '+(m%60)+' mnt':'');};
+function showStats(){
+  const today=stats.days[dayKey()]||0;
+  const days=[];
+  for(let i=6;i>=0;i--){const t=Date.now()-i*86400000;days.push({k:dayKey(t),s:stats.days[dayKey(t)]||0,n:['Min','Sen','Sel','Rab','Kam','Jum','Sab'][new Date(t).getDay()]});}
+  const maxS=Math.max(stats.goal*60,...days.map(d=>d.s),60);
+  let streak=0;
+  for(let i=today>0?0:1;i<400;i++){if((stats.days[dayKey(Date.now()-i*86400000)]||0)>0)streak++;else break;}
+  const total=Object.values(stats.days).reduce((a,b)=>a+b,0);
+  const done=books.filter(b=>bookStatus(b)==='done').length;
+  const gp=Math.min(100,Math.round(today/(stats.goal*60)*100));
+  openModal('<h3>Statistik baca</h3>'+
+    '<div class="setrow"><label>Hari ini: '+dur(today)+' dari target '+stats.goal+' mnt</label><div class="pbar" style="height:8px"><i style="width:'+gp+'%"></i></div></div>'+
+    '<div class="bars">'+days.map(d=>'<div class="bcol"><div class="bfill" style="height:'+Math.round(d.s/maxS*100)+'%" title="'+Math.round(d.s/60)+' mnt"></div><small>'+d.n+'</small></div>').join('')+'</div>'+
+    '<div class="kv"><span>Runtun hari membaca</span><b>'+streak+' hari</b></div>'+
+    '<div class="kv"><span>Total waktu membaca</span><b>'+dur(total)+'</b></div>'+
+    '<div class="kv"><span>Buku selesai</span><b>'+done+' dari '+books.length+'</b></div>'+
+    '<div class="kv"><span>Kecepatan baca</span><b>± '+Math.round(wpm())+' kata/mnt'+(stats.rsec<120?' (perkiraan)':'')+'</b></div>'+
+    '<div class="setrow" style="margin-top:12px"><label>Target harian</label><div class="chips">'+[10,20,30,60].map(g=>'<button class="chip'+(stats.goal===g?' on':'')+'" data-goal="'+g+'">'+g+' mnt</button>').join('')+'</div></div>'+
+    '<div class="actions"><button class="btn primary" id="stOk">Tutup</button></div>',
+  root=>{
+    $('#stOk').onclick=closeModal;
+    root.querySelectorAll('[data-goal]').forEach(b=>b.onclick=()=>{stats.goal=+b.dataset.goal;saveStats();showStats();});
+  });
+}
+
+/* ---------- Sorotan & catatan ---------- */
+const HL_COLORS=['','#f5d742','#6fd08a','#6fb2ff','#ff8fbf'];
+function textNodesOf(root){
+  const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT),a=[];let n;
+  while((n=w.nextNode()))a.push(n);
+  return a;
+}
+function offsetOf(root,node,off){
+  const r=document.createRange();r.selectNodeContents(root);r.setEnd(node,off);
+  return r.toString().length;
+}
+function applyHighlights(){
+  const root=$('#rText');
+  root.querySelectorAll('mark.hl').forEach(m=>{
+    const p=m.parentNode;while(m.firstChild)p.insertBefore(m.firstChild,m);p.removeChild(m);p.normalize();
+  });
+  if(!cur)return;
+  const list=(cur.meta.highlights||[]).filter(h=>h.ch===cur.ch);
+  if(!list.length)return;
+  const nodes=textNodesOf(root);let acc=0;
+  const info=nodes.map(n=>{const o={n,s:acc,e:acc+n.nodeValue.length};acc=o.e;return o;});
+  const perNode=new Map();
+  for(const h of list){
+    for(const o of info){
+      if(o.e<=h.s||o.s>=h.e)continue;
+      const a=Math.max(h.s,o.s)-o.s,b=Math.min(h.e,o.e)-o.s;
+      if(!perNode.has(o.n))perNode.set(o.n,[]);
+      perNode.get(o.n).push({a,b,h});
+    }
+  }
+  perNode.forEach((segs,node)=>{
+    segs.sort((x,y)=>y.a-x.a);
+    let limit=Infinity;
+    for(const sg of segs){
+      const b=Math.min(sg.b,limit);
+      if(sg.a>=b)continue;
+      limit=sg.a;
+      try{
+        const r=document.createRange();r.setStart(node,sg.a);r.setEnd(node,b);
+        const m=document.createElement('mark');
+        m.className='hl c'+sg.h.c+(sg.h.note?' note':'');m.dataset.id=sg.h.id;
+        r.surroundContents(m);
+      }catch(e){}
+    }
+  });
+}
+function currentSel(){
+  const sel=window.getSelection();
+  if(!sel||sel.rangeCount===0||sel.isCollapsed)return null;
+  const r=sel.getRangeAt(0),root=$('#rText');
+  if(!root.contains(r.commonAncestorContainer))return null;
+  const s=offsetOf(root,r.startContainer,r.startOffset),e=offsetOf(root,r.endContainer,r.endOffset);
+  if(e<=s)return null;
+  return {s,e,text:r.toString().replace(/\s+/g,' ').trim()};
+}
+let selT=null;
+document.addEventListener('selectionchange',()=>{
+  clearTimeout(selT);
+  selT=setTimeout(()=>{$('#selBar').hidden=!(cur&&!$('#reader').hidden&&currentSel());},150);
+});
+function addHighlight(color,withNote){
+  const sel=currentSel();if(!sel||!cur)return;
+  const list=cur.meta.highlights=cur.meta.highlights||[];
+  let note='';
+  for(let i=list.length-1;i>=0;i--){
+    const h=list[i];
+    if(h.ch===cur.ch&&h.s<sel.e&&h.e>sel.s){if(h.note)note=(note?note+'\n':'')+h.note;list.splice(i,1);}
+  }
+  const h={id:uid(),ch:cur.ch,s:sel.s,e:sel.e,text:sel.text.slice(0,300),c:color,note,t:Date.now()};
+  list.push(h);
+  const s=window.getSelection();if(s)s.removeAllRanges();
+  $('#selBar').hidden=true;
+  applyHighlights();saveNow();
+  if(withNote)hlModal(h.id);else toast('Disorot ✓');
+}
+function hlModal(id){
+  const h=(cur.meta.highlights||[]).find(x=>x.id===id);if(!h)return;
+  openModal('<h3>Sorotan &amp; catatan</h3>'+
+    '<p style="margin:0 0 10px;padding:8px 10px;border-left:4px solid '+HL_COLORS[h.c]+';background:var(--bg);border-radius:6px;font-size:.92rem;line-height:1.5">'+esc(h.text)+'</p>'+
+    '<div class="chips" style="margin-bottom:10px">'+[1,2,3,4].map(c=>'<button class="dotbtn'+(h.c===c?' on':'')+'" data-c="'+c+'" style="background:'+HL_COLORS[c]+'" aria-label="Warna '+c+'"></button>').join('')+'</div>'+
+    '<label class="field"><span>Catatan</span><textarea id="hlNote" rows="4" style="width:100%;border:1px solid var(--border);background:var(--bg);border-radius:10px;padding:10px 12px;font:inherit;color:inherit">'+esc(h.note||'')+'</textarea></label>'+
+    '<div class="actions"><button class="btn danger" id="hlDel">Hapus sorotan</button><button class="btn primary" id="hlOk">Simpan</button></div>',
+  root=>{
+    let color=h.c;
+    root.querySelectorAll('.dotbtn').forEach(b=>b.onclick=()=>{color=+b.dataset.c;root.querySelectorAll('.dotbtn').forEach(x=>x.classList.toggle('on',x===b));});
+    $('#hlOk').onclick=()=>{h.c=color;h.note=$('#hlNote').value.trim();closeModal();applyHighlights();saveNow();};
+    $('#hlDel').onclick=()=>{cur.meta.highlights=cur.meta.highlights.filter(x=>x.id!==id);closeModal();applyHighlights();saveNow();toast('Sorotan dihapus');};
+  });
+}
+document.querySelectorAll('#selBar [data-c]').forEach(b=>{
+  b.addEventListener('pointerdown',e=>e.preventDefault());
+  b.onclick=()=>addHighlight(+b.dataset.c,false);
+});
+$('#selNote').addEventListener('pointerdown',e=>e.preventDefault());
+$('#selNote').onclick=()=>addHighlight(1,true);
+$('#selCopy').addEventListener('pointerdown',e=>e.preventDefault());
+$('#selCopy').onclick=async()=>{
+  const s=currentSel();if(!s)return;
+  try{await navigator.clipboard.writeText(s.text);toast('Disalin ✓');}catch(e){toast('Tidak bisa menyalin di sini');}
+};
+$('#rText').addEventListener('click',e=>{
+  const m=e.target.closest&&e.target.closest('mark.hl');
+  if(m&&!(window.getSelection&&String(window.getSelection())))hlModal(m.dataset.id);
+});
+function elPage(el){
+  const c=$('#clip').getBoundingClientRect(),r=el.getBoundingClientRect();
+  return Math.max(0,Math.min(pg.count-1,Math.floor((r.left-c.left+pg.page*pg.w+2)/pg.w)));
+}
+function scrollToEl(el){
+  if(isPaged()){const p=elPage(el);if(p!==pg.page){pg.page=p;applyPage(true);}}
+  else el.scrollIntoView({block:'center'});
+}
+function gotoHighlight(h){
+  const plain=(cur.chapters[h.ch]?cur.chapters[h.ch].html:'').replace(/<[^>]*>/g,'').length||1;
+  showChapter(h.ch,Math.min(1,h.s/plain));
+  setTimeout(()=>{const m=$('#rText').querySelector('mark[data-id="'+h.id+'"]');if(m)scrollToEl(m);},200);
+}
+
+/* ---------- Baca nyaring (TTS) + timer tidur ---------- */
+const tts={on:false,idx:0,items:[],gen:0,advancing:false,sleepT:null,sleepAt:0,sleepEnd:false,warnedAr:false};
+const hasTTS=()=>typeof speechSynthesis!=='undefined'&&typeof SpeechSynthesisUtterance!=='undefined';
+function chunkText(t){
+  const parts=t.match(/[^.!?؟۔。！？…]+[.!?؟۔。！？…]*["”»)]*\s*/g)||[t];
+  const out=[];let buf='';
+  for(const p of parts){if((buf+p).length>180&&buf){out.push(buf.trim());buf=p;}else buf+=p;}
+  if(buf.trim())out.push(buf.trim());
+  return out.flatMap(x=>x.length>220?(x.match(/.{1,200}(\s|$)/g)||[x]).map(s=>s.trim()).filter(Boolean):[x]);
+}
+function ttsItems(){
+  const items=[];
+  $('#rText').querySelectorAll('p,h2,h3,li,blockquote').forEach(el=>{
+    const text=el.textContent.replace(/\s+/g,' ').trim();
+    if(!text)return;
+    const ar=(text.match(AR_G)||[]).length,lat=(text.match(LAT_G)||[]).length;
+    chunkText(text).forEach(c=>items.push({el,text:c,ar:ar>lat}));
+  });
+  return items;
+}
+function firstVisibleItem(items){
+  const b=$('#rBody').getBoundingClientRect(),c=$('#clip').getBoundingClientRect();
+  for(let i=0;i<items.length;i++){
+    const r=items[i].el.getBoundingClientRect();
+    if(isPaged()){if(r.right>c.left+5&&r.bottom>b.top)return i;}
+    else if(r.bottom>b.top+10)return i;
+  }
+  return 0;
+}
+function pickVoice(ar){
+  const vs=speechSynthesis.getVoices();
+  if(ar)return vs.find(v=>/^ar/i.test(v.lang))||null;
+  if(settings.ttsVoice){const v=vs.find(x=>x.voiceURI===settings.ttsVoice);if(v&&!/^ar/i.test(v.lang))return v;}
+  return vs.find(v=>/^id/i.test(v.lang))||null;
+}
+function ttsMark(el){
+  $('#rText').querySelectorAll('.tts-cur').forEach(x=>x.classList.remove('tts-cur'));
+  if(el){el.classList.add('tts-cur');scrollToEl(el);}
+}
+function ttsSpeak(){
+  if(!tts.on||!cur)return;
+  const it=tts.items[tts.idx];
+  if(!it){
+    if(cur.ch<cur.chapters.length-1&&!tts.sleepEnd){
+      tts.advancing=true;showChapter(cur.ch+1,0);
+      const g=tts.gen;
+      setTimeout(()=>{tts.advancing=false;if(!tts.on||tts.gen!==g)return;tts.items=ttsItems();tts.idx=0;ttsSpeak();},500);
+    }else ttsStop(false,tts.sleepEnd?'Timer tidur: berhenti di akhir bab 😴':'Selesai dibaca');
+    return;
+  }
+  ttsMark(it.el);
+  const g=tts.gen,u=new SpeechSynthesisUtterance(it.text);
+  u.rate=settings.ttsRate||1;
+  const v=pickVoice(it.ar);
+  if(v){u.voice=v;u.lang=v.lang;}
+  else{u.lang=it.ar?'ar-SA':'id-ID';if(it.ar&&!tts.warnedAr){tts.warnedAr=true;toast('Suara Arab tidak ditemukan di perangkat; bagian Arab mungkin dilewati',4500);}}
+  u.onend=()=>{if(tts.on&&tts.gen===g){tts.idx++;ttsSpeak();}};
+  u.onerror=e=>{if(!tts.on||tts.gen!==g)return;if(e&&(e.error==='interrupted'||e.error==='canceled'))return;tts.idx++;ttsSpeak();};
+  speechSynthesis.speak(u);
+}
+function ttsStart(){
+  if(!hasTTS()){toast('Perangkat ini tidak mendukung baca nyaring');return;}
+  speechSynthesis.cancel();tts.gen++;
+  tts.items=ttsItems();
+  if(!tts.items.length){toast('Tidak ada teks untuk dibaca');return;}
+  tts.idx=firstVisibleItem(tts.items);tts.on=true;
+  noWake=false;updateWakeLock();
+  $('#rTts').classList.add('on');
+  ttsSpeak();
+}
+function ttsStop(silent,msg){
+  if(hasTTS()){tts.gen++;try{speechSynthesis.cancel();}catch(e){}}
+  const was=tts.on;tts.on=false;
+  if($('#rTts'))$('#rTts').classList.remove('on');
+  $('#rText').querySelectorAll('.tts-cur').forEach(x=>x.classList.remove('tts-cur'));
+  if(silent)return;
+  if(was&&msg)toast(msg,3500);
+}
+function ttsPauseToggle(){
+  if(tts.on){const i=tts.idx;ttsStop(true);tts.idx=i;tts.paused=true;}
+  else if(tts.paused&&cur){tts.paused=false;tts.items=ttsItems();tts.idx=Math.min(tts.idx,Math.max(0,tts.items.length-1));tts.on=true;$('#rTts').classList.add('on');speechSynthesis.cancel();tts.gen++;ttsSpeak();}
+  else ttsStart();
+}
+function setSleep(min){
+  clearTimeout(tts.sleepT);tts.sleepAt=0;tts.sleepEnd=false;
+  if(min==='end'){tts.sleepEnd=true;toast('Berhenti di akhir bab ini');return;}
+  if(!min)return;
+  tts.sleepAt=Date.now()+min*60000;
+  tts.sleepT=setTimeout(()=>{
+    ttsStop(false,'Timer tidur selesai 😴');
+    tts.sleepAt=0;noWake=true;updateWakeLock();
+  },min*60000);
+  toast('Timer tidur: '+min+' menit');
+}
+function ttsModal(){
+  if(!hasTTS()){toast('Perangkat ini tidak mendukung baca nyaring');return;}
+  const vs=speechSynthesis.getVoices();
+  const vopts='<option value="">Otomatis</option>'+vs.map(v=>'<option value="'+esc(v.voiceURI)+'">'+esc(v.name+' ('+v.lang+')')+'</option>').join('');
+  const chip=(k,v,l)=>'<button class="chip'+(String(settings[k])===String(v)?' on':'')+'" data-k="'+k+'" data-v="'+v+'">'+l+'</button>';
+  const left=tts.sleepAt?Math.max(1,Math.round((tts.sleepAt-Date.now())/60000)):0;
+  openModal('<h3>Baca nyaring</h3>'+
+    '<div class="menurow"><button class="btn primary" id="tPlay">'+(tts.on?'⏸ Jeda':'▶ Mulai dari halaman ini')+'</button><button class="btn" id="tStop">⏹ Berhenti</button></div>'+
+    '<div class="setrow"><label>Kecepatan</label><div class="chips">'+[0.8,1,1.2,1.5,2].map(r=>chip('ttsRate',r,r+'×')).join('')+'</div></div>'+
+    '<label class="field"><span>Suara (teks Indonesia/Latin)</span><select id="tVoice" style="width:100%;border:1px solid var(--border);background:var(--bg);border-radius:10px;padding:10px 12px">'+vopts+'</select></label>'+
+    (vs.length?'':'<p class="muted">Daftar suara belum siap. Tutup lalu buka lagi sebentar lagi.</p>')+
+    '<div class="setrow"><label>Timer tidur'+(left?' (sisa ± '+left+' mnt)':tts.sleepEnd?' (akhir bab)':'')+'</label><div class="chips">'+
+      '<button class="chip" data-s="0">Mati</button>'+[15,30,45,60].map(m=>'<button class="chip" data-s="'+m+'">'+m+' mnt</button>').join('')+'<button class="chip" data-s="end">Akhir bab</button></div></div>'+
+    '<p class="muted">Bagian berbahasa Arab dibacakan dengan suara Arab bila tersedia di perangkat. Timer tidur juga mematikan penahan layar.</p>'+
+    '<div class="actions"><button class="btn primary" id="tOk">Tutup</button></div>',
+  root=>{
+    $('#tVoice').value=settings.ttsVoice||'';
+    $('#tVoice').onchange=()=>{settings.ttsVoice=$('#tVoice').value;saveSettings();};
+    $('#tOk').onclick=closeModal;
+    $('#tPlay').onclick=()=>{closeModal();ttsPauseToggle();};
+    $('#tStop').onclick=()=>{ttsStop(false,'Dihentikan');tts.paused=false;closeModal();};
+    root.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{
+      settings[b.dataset.k]=parseFloat(b.dataset.v);saveSettings();
+      root.querySelectorAll('[data-k="'+b.dataset.k+'"]').forEach(x=>x.classList.toggle('on',x===b));
+    });
+    root.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{setSleep(b.dataset.s==='end'?'end':+b.dataset.s);closeModal();});
+  });
+}
+$('#rTts').onclick=ttsModal;
+try{if(hasTTS())speechSynthesis.getVoices();}catch(e){}
+
+/* ---------- Ekspor: TXT, DOCX, EPUB ---------- */
+/*ZIP-BEGIN*/
+const CRC_T=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0;}return t;})();
+function crc32(u8){let c=0xFFFFFFFF;for(let i=0;i<u8.length;i++)c=CRC_T[(c^u8[i])&255]^(c>>>8);return (c^0xFFFFFFFF)>>>0;}
+async function deflateRaw(u8){
+  if(typeof CompressionStream==='undefined')return null;
+  try{return new Uint8Array(await new Response(new Blob([u8]).stream().pipeThrough(new CompressionStream('deflate-raw'))).arrayBuffer());}catch(e){return null;}
+}
+/* files: [{name, data:Uint8Array|string, store?:boolean}] → Uint8Array (ZIP) */
+async function zipBuild(files){
+  const te=new TextEncoder(),parts=[],central=[];
+  const now=new Date();
+  const dosT=(now.getHours()<<11)|(now.getMinutes()<<5)|(now.getSeconds()>>1);
+  const dosD=((Math.max(1980,now.getFullYear())-1980)<<9)|((now.getMonth()+1)<<5)|now.getDate();
+  let off=0;
+  for(const f of files){
+    const nameB=te.encode(f.name);
+    const raw=typeof f.data==='string'?te.encode(f.data):f.data;
+    let method=0,body=raw;
+    if(!f.store&&raw.length>200){const d=await deflateRaw(raw);if(d&&d.length<raw.length){method=8;body=d;}}
+    const crc=crc32(raw);
+    const lh=new Uint8Array(30+nameB.length),dv=new DataView(lh.buffer);
+    dv.setUint32(0,0x04034b50,true);dv.setUint16(4,20,true);dv.setUint16(6,0x0800,true);dv.setUint16(8,method,true);
+    dv.setUint16(10,dosT,true);dv.setUint16(12,dosD,true);dv.setUint32(14,crc,true);
+    dv.setUint32(18,body.length,true);dv.setUint32(22,raw.length,true);dv.setUint16(26,nameB.length,true);dv.setUint16(28,0,true);
+    lh.set(nameB,30);
+    const ch=new Uint8Array(46+nameB.length),cv=new DataView(ch.buffer);
+    cv.setUint32(0,0x02014b50,true);cv.setUint16(4,20,true);cv.setUint16(6,20,true);cv.setUint16(8,0x0800,true);cv.setUint16(10,method,true);
+    cv.setUint16(12,dosT,true);cv.setUint16(14,dosD,true);cv.setUint32(16,crc,true);
+    cv.setUint32(20,body.length,true);cv.setUint32(24,raw.length,true);cv.setUint16(28,nameB.length,true);
+    cv.setUint32(42,off,true);ch.set(nameB,46);
+    parts.push(lh,body);central.push(ch);off+=lh.length+body.length;
+  }
+  const cdSize=central.reduce((a,c)=>a+c.length,0);
+  const end=new Uint8Array(22),ev=new DataView(end.buffer);
+  ev.setUint32(0,0x06054b50,true);ev.setUint16(8,files.length,true);ev.setUint16(10,files.length,true);
+  ev.setUint32(12,cdSize,true);ev.setUint32(16,off,true);
+  const all=[...parts,...central,end],total=all.reduce((a,c)=>a+c.length,0),out=new Uint8Array(total);
+  let p=0;for(const c of all){out.set(c,p);p+=c.length;}
+  return out;
+}
+const xe=s=>String(s).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\uFFFE\uFFFF]/g,'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+function dataUriBytes(uri){
+  const m=/^data:([^;,]+);base64,([\s\S]*)$/.exec(uri||'');
+  if(!m)return null;
+  const bin=atob(m[2]),u8=new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++)u8[i]=bin.charCodeAt(i);
+  return {type:m[1],bytes:u8,ext:m[1]==='image/png'?'png':m[1]==='image/gif'?'gif':m[1]==='image/webp'?'webp':'jpg'};
+}
+/*ZIP-END*/
+const cleanXml=s=>String(s).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\uFFFE\uFFFF]/g,'');
+const safeName=t=>(String(t).replace(/[\\/:*?"<>|\s]+/g,' ').trim().slice(0,60)||'buku');
+
+/* --- TXT --- */
+function chapterBlocksText(html){
+  const d=new DOMParser().parseFromString('<body>'+html+'</body>','text/html');
+  const out=[];
+  const walk=el=>{
+    for(const n of el.childNodes){
+      if(n.nodeType!==1)continue;
+      const t=n.localName.toLowerCase();
+      if(t==='ul'||t==='ol'){let i=1;for(const li of n.children)out.push((t==='ol'?(i++)+'. ':'• ')+li.textContent.replace(/\s+/g,' ').trim());}
+      else if(t==='hr')out.push('* * *');
+      else if(t==='figure'||t==='img'){/* gambar dilewati pada TXT */}
+      else if(['p','h2','h3','blockquote','pre'].includes(t)){const x=(t==='pre'?n.textContent:n.textContent.replace(/\s+/g,' ')).trim();if(x)out.push({h:t==='h2'||t==='h3',t:x});}
+      else walk(n);
+    }
+  };
+  walk(d.body);
+  return out;
+}
+function buildTxt(meta,chapters){
+  let out=meta.title+'\n'+(meta.author?meta.author+'\n':'')+'\n';
+  chapters.forEach((c,i)=>{
+    const bl=chapterBlocksText(c.html);
+    const startsH=bl.length&&typeof bl[0]==='object'&&bl[0].h;
+    out+='\n\n'+(startsH?'':c.title+'\n\n');
+    out+=bl.map(b=>typeof b==='string'?b:(b.h?b.t.toUpperCase():b.t)).join('\n\n')+'\n';
+  });
+  return new Blob(['\ufeff'+out.replace(/\n{4,}/g,'\n\n\n')],{type:'text/plain;charset=utf-8'});
+}
+
+/* --- EPUB --- */
+function epubXhtml(title,body){
+  return '<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" lang="id" xml:lang="id"><head><meta charset="utf-8"/><title>'+xe(title)+'</title><link rel="stylesheet" type="text/css" href="style.css"/></head><body>'+body+'</body></html>';
+}
+async function buildEpub(meta,chapters){
+  const files=[],imgFiles=[];let imgN=0;
+  files.push({name:'mimetype',data:'application/epub+zip',store:true});
+  files.push({name:'META-INF/container.xml',data:'<?xml version="1.0" encoding="utf-8"?>\n<container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container"><rootfiles><rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/></rootfiles></container>'});
+  files.push({name:'OEBPS/style.css',data:'body{line-height:1.6}p{margin:0 0 .8em;text-indent:1.2em}h2,h3{text-align:center;margin:1.2em 0 .8em}h2+p,hr+p{text-indent:0}p.center{text-align:center;text-indent:0}blockquote{margin:1em 1.5em;font-style:italic}img{max-width:100%;height:auto}figure{margin:1em 0;text-align:center}hr{border:0;text-align:center}hr:after{content:"* * *"}'});
+  const items=[];
+  chapters.forEach((c,i)=>{
+    let h=cleanXml(c.html).replace(/<br>/g,'<br/>').replace(/<hr>/g,'<hr/>').replace(/&emsp;/g,'&#8195;').replace(/&nbsp;/g,'&#160;');
+    if(AR_TEST.test(h))h=h.replace(/<(p|h2|h3|li|blockquote)(?=[\s>])/g,'<$1 dir="auto"');
+    h=h.replace(/<img\b[^>]*>/g,tag=>{
+      const m=/src="(data:[^"]+)"/.exec(tag),alt=(/alt="([^"]*)"/.exec(tag)||[,''])[1];
+      const di=m?dataUriBytes(m[1]):null;
+      if(!di)return '';
+      const nm='images/img'+(++imgN)+'.'+di.ext;
+      imgFiles.push({name:'OEBPS/'+nm,data:di.bytes,store:true,type:di.type,id:'img'+imgN});
+      return '<img src="'+nm+'" alt="'+alt+'"/>';
+    });
+    if(!/^<h[23]/.test(h))h='<h2>'+xe(c.title)+'</h2>'+h;
+    items.push({id:'c'+(i+1),href:'ch'+(i+1)+'.xhtml',title:c.title});
+    files.push({name:'OEBPS/ch'+(i+1)+'.xhtml',data:epubXhtml(c.title,h)});
+  });
+  let coverItem='';
+  if(meta.cover){
+    const di=dataUriBytes(meta.cover);
+    if(di){files.push({name:'OEBPS/cover.'+di.ext,data:di.bytes,store:true});coverItem='<item id="cover-img" href="cover.'+di.ext+'" media-type="'+di.type+'" properties="cover-image"/>';}
+  }
+  imgFiles.forEach(f=>files.push({name:f.name,data:f.data,store:true}));
+  files.push({name:'OEBPS/nav.xhtml',data:'<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" lang="id"><head><meta charset="utf-8"/><title>Daftar isi</title></head><body><nav epub:type="toc" id="toc"><h1>Daftar isi</h1><ol>'+items.map(it=>'<li><a href="'+it.href+'">'+xe(it.title)+'</a></li>').join('')+'</ol></nav></body></html>'});
+  files.push({name:'OEBPS/toc.ncx',data:'<?xml version="1.0" encoding="utf-8"?>\n<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1"><head><meta name="dtb:uid" content="urn:uuid:'+xe(meta.id)+'"/><meta name="dtb:depth" content="1"/><meta name="dtb:totalPageCount" content="0"/><meta name="dtb:maxPageNumber" content="0"/></head><docTitle><text>'+xe(meta.title)+'</text></docTitle><navMap>'+items.map((it,i)=>'<navPoint id="n'+(i+1)+'" playOrder="'+(i+1)+'"><navLabel><text>'+xe(it.title)+'</text></navLabel><content src="'+it.href+'"/></navPoint>').join('')+'</navMap></ncx>'});
+  const manifest=items.map(it=>'<item id="'+it.id+'" href="'+it.href+'" media-type="application/xhtml+xml"/>').join('')+
+    imgFiles.map(f=>'<item id="'+f.id+'" href="'+f.name.replace('OEBPS/','')+'" media-type="'+f.type+'"/>').join('')+coverItem+
+    '<item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/><item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/><item id="css" href="style.css" media-type="text/css"/>';
+  files.push({name:'OEBPS/content.opf',data:'<?xml version="1.0" encoding="utf-8"?>\n<package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="uid"><metadata xmlns:dc="http://purl.org/dc/elements/1.1/"><dc:identifier id="uid">urn:uuid:'+xe(meta.id)+'</dc:identifier><dc:title>'+xe(meta.title)+'</dc:title>'+(meta.author?'<dc:creator>'+xe(meta.author)+'</dc:creator>':'')+'<dc:language>id</dc:language><meta property="dcterms:modified">'+new Date().toISOString().replace(/\.\d+Z$/,'Z')+'</meta>'+(coverItem?'<meta name="cover" content="cover-img"/>':'')+'</metadata><manifest>'+manifest+'</manifest><spine toc="ncx">'+items.map(it=>'<itemref idref="'+it.id+'"/>').join('')+'</spine></package>'});
+  return new Blob([await zipBuild(files)],{type:'application/epub+zip'});
+}
+
+/* --- DOCX --- */
+const DOCX_NS='xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"';
+const ARF='<w:rFonts w:ascii="Traditional Arabic" w:hAnsi="Traditional Arabic" w:cs="Traditional Arabic"/><w:rtl/><w:sz w:val="34"/><w:szCs w:val="34"/>';
+function dxRun(text,f){
+  const base=(f.b?'<w:b/><w:bCs/>':'')+(f.i?'<w:i/><w:iCs/>':'')+(f.sup?'<w:vertAlign w:val="superscript"/>':'')+(f.sub?'<w:vertAlign w:val="subscript"/>':'')+(f.mono?'<w:rFonts w:ascii="Courier New" w:hAnsi="Courier New"/><w:sz w:val="20"/>':'');
+  let out='';
+  const push=(t,ar)=>{if(!t)return;out+='<w:r><w:rPr>'+(ar?ARF:'')+base+'</w:rPr><w:t xml:space="preserve">'+xe(t)+'</w:t></w:r>';};
+  let last=0,m;AR_RUN.lastIndex=0;
+  while((m=AR_RUN.exec(text))){push(text.slice(last,m.index),false);push(settings.arDigits==='latin'?m[0]:toArDigits(m[0]),true);last=m.index+m[0].length;}
+  push(text.slice(last),false);
+  return out;
+}
+function dxInline(node,f,ctx){
+  let out='';
+  for(const n of node.childNodes){
+    if(n.nodeType===3){out+=dxRun(n.nodeValue.replace(f.mono?/$^/:/\s+/g,' '),f);continue;}
+    if(n.nodeType!==1)continue;
+    const t=n.localName.toLowerCase();
+    if(t==='br'){out+='<w:r><w:br/></w:r>';continue;}
+    if(t==='img'){out+=dxImage(n.getAttribute('src'),ctx);continue;}
+    const g=Object.assign({},f);
+    if(t==='strong'||t==='b')g.b=true;else if(t==='em'||t==='i')g.i=true;else if(t==='sup')g.sup=true;else if(t==='sub')g.sub=true;else if(t==='code')g.mono=true;
+    out+=dxInline(n,g,ctx);
+  }
+  return out;
+}
+function dxImage(src,ctx){
+  const im=ctx.imgs.get(src);if(!im)return '';
+  const maxW=5486400;let cx=im.w*9525,cy=im.h*9525;
+  if(cx>maxW){cy=Math.round(cy*maxW/cx);cx=maxW;}
+  const id=im.n;
+  return '<w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0"><wp:extent cx="'+cx+'" cy="'+cy+'"/><wp:docPr id="'+id+'" name="Gambar '+id+'"/><a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic><pic:nvPicPr><pic:cNvPr id="'+id+'" name="img'+id+'"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="'+im.rid+'"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="'+cx+'" cy="'+cy+'"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>';
+}
+function dxPara(inner,opt){
+  opt=opt||{};
+  const ppr=(opt.style?'<w:pStyle w:val="'+opt.style+'"/>':'')+(opt.pb?'<w:pageBreakBefore/>':'')+(opt.rtl?'<w:bidi/>':'')+(opt.ind?'<w:ind w:left="'+opt.ind+'"/>':'')+(opt.center?'<w:jc w:val="center"/>':'');
+  return '<w:p>'+(ppr?'<w:pPr>'+ppr+'</w:pPr>':'')+inner+'</w:p>';
+}
+function dxBlocks(html,ctx,firstHeadingBreak){
+  const d=new DOMParser().parseFromString('<body>'+html+'</body>','text/html');
+  let out='',firstH=firstHeadingBreak;
+  const rtlOf=txt=>{const a=(txt.match(AR_G)||[]).length,l=(txt.match(LAT_G)||[]).length;const f=txt.match(AR_FIRST);return a>0&&((f&&AR_TEST.test(f[0]))||a/(a+l)>=0.75);};
+  const walk=el=>{
+    for(const n of el.childNodes){
+      if(n.nodeType!==1)continue;
+      const t=n.localName.toLowerCase(),txt=n.textContent;
+      if(t==='h2'||t==='h3'){out+=dxPara(dxInline(n,{},ctx),{style:t==='h2'?'Heading1':'Heading2',pb:t==='h2'&&firstH,rtl:rtlOf(txt)});if(t==='h2')firstH=false;}
+      else if(t==='p'){out+=dxPara(dxInline(n,{},ctx),{rtl:rtlOf(txt),center:n.classList.contains('center')});}
+      else if(t==='blockquote'){out+=dxPara(dxInline(n,{i:true},ctx),{ind:720,rtl:rtlOf(txt)});}
+      else if(t==='pre'){for(const ln of txt.split('\n'))out+=dxPara(dxRun(ln,{mono:true}),{});}
+      else if(t==='hr'){out+=dxPara(dxRun('* * *',{}),{center:true});}
+      else if(t==='ul'||t==='ol'){let i=1;for(const li of n.children){out+=dxPara(dxRun((t==='ol'?(i++)+'. ':'• '),{})+dxInline(li,{},ctx),{ind:540,rtl:rtlOf(li.textContent)});}}
+      else if(t==='figure'||t==='div'){
+        const im=n.querySelector&&n.querySelector('img');
+        if(t==='figure'&&im)out+=dxPara(dxImage(im.getAttribute('src'),ctx),{center:true});else walk(n);
+      }
+      else if(t==='img')out+=dxPara(dxImage(n.getAttribute('src'),ctx),{center:true});
+      else walk(n);
+    }
+  };
+  walk(d.body);
+  return {xml:out,firstH};
+}
+async function buildDocx(meta,chapters){
+  const ctx={imgs:new Map()},mediaFiles=[];let n=0;
+  const srcs=new Set();
+  chapters.forEach(c=>{(c.html.match(/<img\b[^>]*src="data:[^"]+"/g)||[]).forEach(t=>{const m=/src="(data:[^"]+)"/.exec(t);if(m)srcs.add(m[1]);});});
+  for(const src of srcs){
+    const di=dataUriBytes(src);if(!di||!['png','jpg','gif'].includes(di.ext))continue;
+    const dim=await new Promise(r=>{const im=new Image();im.onload=()=>r({w:im.naturalWidth||400,h:im.naturalHeight||300});im.onerror=()=>r({w:400,h:300});im.src=src;});
+    n++;ctx.imgs.set(src,{n,rid:'rIdImg'+n,w:dim.w,h:dim.h});
+    mediaFiles.push({name:'word/media/image'+n+'.'+di.ext,data:di.bytes,store:true,rid:'rIdImg'+n,ext:di.ext});
+  }
+  let body=dxPara(dxRun(meta.title,{}),{style:'Title',center:true});
+  if(meta.author)body+=dxPara(dxRun(meta.author,{}),{center:true});
+  let first=true;
+  for(const c of chapters){
+    let html=cleanXml(c.html);
+    let pre='';
+    if(!/^<h[23]/.test(html))pre=dxPara(dxRun(c.title,{}),{style:'Heading1',pb:true});
+    const r=dxBlocks(html,ctx,true);
+    body+=pre+r.xml;first=false;
+  }
+  const docXml='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<w:document '+DOCX_NS+'><w:body>'+body+'<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440" w:header="708" w:footer="708" w:gutter="0"/></w:sectPr></w:body></w:document>';
+  const styles='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Cambria" w:hAnsi="Cambria" w:cs="Traditional Arabic"/><w:sz w:val="23"/><w:szCs w:val="28"/><w:lang w:val="id-ID" w:bidi="ar-SA"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="140" w:line="320" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults>'+
+    '<w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/></w:style>'+
+    '<w:style w:type="paragraph" w:styleId="Title"><w:name w:val="Title"/><w:basedOn w:val="Normal"/><w:qFormat/><w:pPr><w:spacing w:before="2400" w:after="240"/><w:jc w:val="center"/></w:pPr><w:rPr><w:b/><w:sz w:val="56"/></w:rPr></w:style>'+
+    '<w:style w:type="paragraph" w:styleId="Heading1"><w:name w:val="heading 1"/><w:basedOn w:val="Normal"/><w:next w:val="Normal"/><w:qFormat/><w:pPr><w:keepNext/><w:spacing w:before="360" w:after="240"/><w:jc w:val="center"/><w:outlineLvl w:val="0"/></w:pPr><w:rPr><w:b/><w:sz w:val="36"/></w:rPr></w:style>'+
+    '<w:style w:type="paragraph" w:styleId="Heading2"><w:name w:val="heading 2"/><w:basedOn w:val="Normal"/><w:next w:val="Normal"/><w:qFormat/><w:pPr><w:keepNext/><w:spacing w:before="240" w:after="120"/><w:outlineLvl w:val="1"/></w:pPr><w:rPr><w:b/><w:sz w:val="28"/></w:rPr></w:style></w:styles>';
+  const exts=[...new Set(mediaFiles.map(m=>m.ext))];
+  const ct='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/>'+exts.map(e=>'<Default Extension="'+e+'" ContentType="image/'+(e==='jpg'?'jpeg':e)+'"/>').join('')+'<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/><Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/></Types>';
+  const rels='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/></Relationships>';
+  const docRels='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rIdSt" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>'+mediaFiles.map(m=>'<Relationship Id="'+m.rid+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/'+m.name.split('/').pop()+'"/>').join('')+'</Relationships>';
+  const core='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><dc:title>'+xe(meta.title)+'</dc:title><dc:creator>'+xe(meta.author||'')+'</dc:creator><dcterms:created xsi:type="dcterms:W3CDTF">'+new Date().toISOString().replace(/\.\d+Z$/,'Z')+'</dcterms:created></cp:coreProperties>';
+  const files=[{name:'[Content_Types].xml',data:ct},{name:'_rels/.rels',data:rels},{name:'word/document.xml',data:docXml},{name:'word/styles.xml',data:styles},{name:'word/_rels/document.xml.rels',data:docRels},{name:'docProps/core.xml',data:core},...mediaFiles];
+  return new Blob([await zipBuild(files)],{type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+}
+
+/* --- Menu ekspor per buku --- */
+function exportMenu(id){
+  const b=books.find(x=>x.id===id);if(!b)return;
+  openModal('<h3>Ekspor “'+esc(b.title)+'”</h3>'+
+    '<div class="menurow"><button class="btn" data-f="epub">📘 EPUB</button><button class="btn" data-f="docx">📄 DOCX (Word)</button><button class="btn" data-f="txt">📝 TXT</button><button class="btn" data-f="json">💾 Cadangan .json</button></div>'+
+    '<p class="muted">EPUB dan DOCX memuat daftar bab, sampul (EPUB), dan gambar. TXT hanya teks. Cadangan .json memuat penanda, sorotan, dan posisi baca supaya bisa dipulihkan di aplikasi ini.</p>'+
+    '<div class="actions"><button class="btn primary" id="xOk">Tutup</button></div>',
+  root=>{
+    $('#xOk').onclick=closeModal;
+    root.querySelectorAll('[data-f]').forEach(btn=>btn.onclick=async()=>{
+      const f=btn.dataset.f;closeModal();
+      if(f==='json'){exportBooks([id]);return;}
+      toast('Menyiapkan '+f.toUpperCase()+'…',0);
+      try{
+        const c=await dbGet('content',id);
+        if(!c)throw new Error('isi buku tidak ditemukan');
+        await tick();
+        const blob=f==='txt'?buildTxt(b,c.chapters):f==='epub'?await buildEpub(b,c.chapters):await buildDocx(b,c.chapters);
+        await saveBlob(safeName(b.title)+'.'+f,blob);
+        toast(f.toUpperCase()+' siap ✓');
+      }catch(e){
+        if(e&&e.code==='declined')toast('Dibatalkan');
+        else toast('Gagal mengekspor: '+((e&&(e.message||e.code))||'kesalahan'),5000);
+      }
+    });
+  });
+}
+
+/* ---------- Event perpustakaan ---------- */
+const fileInput=$('#file');
+$('#addBtn').onclick=$('#addBtn2').onclick=()=>{appendTarget=null;fileInput.click();};
+fileInput.onchange=async()=>{
+  const f=[...fileInput.files];fileInput.value='';
+  const t=appendTarget;appendTarget=null;
+  if(t)await appendFiles(t,f);else await importFiles(f);
+};
+$('#q').oninput=renderLib;$('#sort').onchange=renderLib;
+$('#stChips').addEventListener('click',e=>{const b=e.target.closest('[data-st]');if(!b)return;filt.status=b.dataset.st;renderLib();});
+$('#fColl').onchange=()=>{filt.coll=$('#fColl').value;renderLib();};
+$('#fTag').onchange=()=>{filt.tag=$('#fTag').value;renderLib();};
+$('#selMode').onclick=()=>{selecting=!selecting;if(!selecting)sel.clear();renderLib();};
+$('#bulkBar').addEventListener('click',e=>{const b=e.target.closest('[data-b]');if(b)bulkAction(b.dataset.b);});
+$('#lib').addEventListener('click',e=>{
+  if(selecting){
+    const card=e.target.closest('.card');
+    if(card){const id=card.dataset.id;if(sel.has(id))sel.delete(id);else sel.add(id);renderLib();}
+    return;
+  }
+  const t=e.target.closest('[data-act]');if(!t)return;
+  const id=t.dataset.id||(t.closest('.card')||{dataset:{}}).dataset.id;
+  if(t.dataset.act==='open'||t.dataset.act==='resume')openBook(id);
+  else if(t.dataset.act==='menu')bookMenu(id);
+});
+let dragN=0;
+window.addEventListener('dragenter',e=>{if(e.dataTransfer&&[...e.dataTransfer.types].includes('Files')){dragN++;$('#veil').hidden=false;}});
+window.addEventListener('dragleave',()=>{dragN=Math.max(0,dragN-1);if(!dragN)$('#veil').hidden=true;});
+window.addEventListener('dragover',e=>e.preventDefault());
+window.addEventListener('drop',e=>{
+  e.preventDefault();dragN=0;$('#veil').hidden=true;
+  if(e.dataTransfer&&e.dataTransfer.files.length)importFiles(e.dataTransfer.files);
+});
+
+/* ---------- Mulai ---------- */
+(async function init(){
+  applySettings();
+  const ok=await openDB();
+  if(!ok){
+    $('#warn').innerHTML='<div class="notice">Penyimpanan permanen tidak tersedia di mode ini — buku hanya tersimpan sementara selama halaman terbuka.</div>';
+  }else{
+    try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}
+  }
+  try{books=await dbAll('meta');}catch(e){books=[];}
+  renderLib();
+})();
+})();
+</script>
+<script>
+/* Daftarkan service worker agar bisa dipakai offline (hanya di HTTPS / localhost) */
+if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost')){
+  window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});
+}
+</script>
+</body>
+</html>
